@@ -1,0 +1,419 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
+<link rel="stylesheet" href="./robodoc.css" type="text/css" />
+<title>./Source/NuevaDescarga.class</title>
+<!-- Source: ./Source/NuevaDescarga.class -->
+<!-- Generated with ROBODoc Version 4.99.38 (Feb  5 2010) -->
+</head>
+<body>
+<div id="logo">
+<a name="robo_top_of_doc">Documentacion Proyecto: MegavideoDes  <img src=" " width="50"   /></a>
+</div> <!-- logo -->
+<div id="navigation">
+<a class="menuitem" href="./toc_index.html#top">Table of Contents</a>
+<a class="menuitem" href="./robo_sourcefiles.html#top">Sourcefiles</a>
+<a class="menuitem" href="./masterindex.html#top">Index</a>
+<a class="menuitem" href="./robo_event.html#top">Events</a>
+<a class="menuitem" href="./robo_modules.html#top">Modules</a>
+<a class="menuitem" href="./robo_metodos.html#top">Metodos</a>
+<a class="menuitem" href="./robo_procedure.html#top">Procedure</a>
+</div> <!-- navigation -->
+<div id="content">
+<hr />
+<a name="Clases2fNuevaDescarga2eclass"></a>
+<a name="robo6"></a><h2>Clases/NuevaDescarga.class [ Modules ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="./ZZIndiceRobodoc_class.html#robo2">Clases</a> ] [ <a href="./robo_modules.html#robo_top_of_doc">Modules</a> ]</p>
+
+<hr />
+<a name="NuevaDescarga2eclass2fDefinicion"></a>
+<a name="robo17"></a><h2>NuevaDescarga.class/Definicion [ Modules ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_modules.html#robo_top_of_doc">Modules</a> ]</p>
+<p class="item_name">DESCRIPTION</p>
+<pre> Crea los botones barra de estado y demas para cada descarga
+ Ademas crea un nueva descarga de wget y controla los eventos
+</pre>
+<p class="item_name">PARAMETERS</p>
+<pre>    PUBLIC tTimer AS Timer
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="squote">' Gambas class file '</span>
+<span class="keyword">PRIVATE</span> wSeparador <span class="keyword">AS</span> Separator
+<span class="keyword">PRIVATE</span> wCajaH <span class="keyword">AS</span> HBox
+<span class="keyword">PRIVATE</span> wCajaV <span class="keyword">AS</span> VBox
+<span class="keyword">PRIVATE</span> wBarraProgreso <span class="keyword">AS</span> ProgressBar
+<span class="keyword">PRIVATE</span> wBotonVer <span class="keyword">AS</span> Button
+<span class="keyword">PRIVATE</span> wBotonCancelar <span class="keyword">AS</span> Button
+<span class="keyword">PRIVATE</span> wBotonReiniciar <span class="keyword">AS</span> Button
+<span class="keyword">PRIVATE</span> wBotonPausar <span class="keyword">AS</span> Button
+<span class="keyword">PRIVATE</span> wBotonEliminar <span class="keyword">AS</span> Button
+<span class="keyword">PRIVATE</span> wEtiquetaEstado <span class="keyword">AS</span> TextBox 
+<span class="keyword">PRIVATE</span> wEtiquetaDestino <span class="keyword">AS</span> TextBox
+<span class="keyword">PRIVATE</span> wEtiquetaTiempo <span class="keyword">AS</span> TextLabel
+<span class="keyword">PRIVATE</span> wEtiquetaVelocidad <span class="keyword">AS</span> TextLabel
+<span class="keyword">PRIVATE</span> oBajarArchivo <span class="keyword">AS</span> BajarArchivo
+
+<span class="keyword">PUBLIC</span> tTimer <span class="keyword">AS</span> <span class="keyword">Timer</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2f5fnew"></a>
+<a name="robo85"></a><h2>NuevaDescarga.class/_new [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>_new</strong>(vBoxPadre AS VBox)
+ crea toda la parte grafica
+</pre>
+<p class="item_name">ARGUMENTS</p>
+<pre>   vBoxPadre AS VBox
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>_new</strong><span class="sign">(</span>vBoxPadre <span class="keyword">AS</span> VBox<span class="sign">)</span>
+  
+  
+  tTimer <span class="sign">=</span> <span class="keyword">NEW</span> <span class="keyword">Timer</span> <span class="keyword">AS</span> <span class="quote">"tTimer"</span>
+  tTimer<span class="sign">.</span>Enabled <span class="sign">=</span> <span class="keyword">TRUE</span>
+    
+  wCajaH <span class="sign">=</span> <span class="keyword">NEW</span> HBox<span class="sign">(</span>vBoxPadre<span class="sign">)</span>
+  wSeparador <span class="sign">=</span> <span class="keyword">NEW</span> Separator<span class="sign">(</span>vBoxPadre<span class="sign">)</span>  
+  
+  wCajaH<span class="sign">.</span>Resize<span class="sign">(</span>700<span class="sign">,</span> 120<span class="sign">)</span>
+  wCajaH<span class="sign">.</span>Spacing <span class="sign">=</span> 10
+  wCajaH<span class="sign">.</span>Padding <span class="sign">=</span> 10
+  
+  wCajaV <span class="sign">=</span> <span class="keyword">NEW</span> VBox<span class="sign">(</span>wCajaH<span class="sign">)</span>
+  wCajaV<span class="sign">.</span>Resize<span class="sign">(</span>32<span class="sign">,</span> 32<span class="sign">)</span>
+  wBotonEliminar <span class="sign">=</span> <span class="keyword">NEW</span> Button<span class="sign">(</span>wCajaV<span class="sign">)</span> <span class="keyword">AS</span> <span class="quote">"wBotonEliminar"</span>
+  wBotonEliminar<span class="sign">.</span>Resize<span class="sign">(</span>32<span class="sign">,</span> 32<span class="sign">)</span>
+  wBotonEliminar<span class="sign">.</span>Picture <span class="sign">=</span> Picture<span class="sign">[</span><span class="quote">"icon:/16/delete"</span><span class="sign">]</span>
+  wBotonEliminar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">FALSE</span>
+  wBotonEliminar<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">""</span>
+  
+  wCajaV <span class="sign">=</span> <span class="keyword">NEW</span> VBox<span class="sign">(</span>wCajaH<span class="sign">)</span>
+  wCajaV<span class="sign">.</span>Resize<span class="sign">(</span>330<span class="sign">,</span> 110<span class="sign">)</span>
+  wCajaV<span class="sign">.</span>Padding <span class="sign">=</span> 0
+  wCajaV<span class="sign">.</span>Spacing <span class="sign">=</span> 0
+  
+  wEtiquetaEstado <span class="sign">=</span> <span class="keyword">NEW</span> TextBox<span class="sign">(</span>wCajaV<span class="sign">)</span>
+  wEtiquetaEstado<span class="sign">.</span>Resize<span class="sign">(</span>300<span class="sign">,</span> 20<span class="sign">)</span>
+  wEtiquetaEstado<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">""</span>
+  wEtiquetaEstado<span class="sign">.</span>Border <span class="sign">=</span> Border<span class="sign">.</span>None
+  wEtiquetaEstado<span class="sign">.</span>BackColor <span class="sign">=</span> Color<span class="sign">.</span>Background
+  wEtiquetaEstado<span class="sign">.</span>ReadOnly <span class="sign">=</span> <span class="keyword">TRUE</span>
+  
+  
+  wBarraProgreso <span class="sign">=</span> <span class="keyword">NEW</span> ProgressBar<span class="sign">(</span>wCajaV<span class="sign">)</span>
+  wBarraProgreso<span class="sign">.</span>Resize<span class="sign">(</span>300<span class="sign">,</span> 32<span class="sign">)</span>
+  wBarraProgreso<span class="sign">.</span>Value <span class="sign">=</span> 0
+  
+  wEtiquetaDestino <span class="sign">=</span> <span class="keyword">NEW</span> TextBox<span class="sign">(</span>wCajaV<span class="sign">)</span>
+  wEtiquetaDestino<span class="sign">.</span>Resize<span class="sign">(</span>300<span class="sign">,</span> 20<span class="sign">)</span>
+  wEtiquetaDestino<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">""</span>
+  wEtiquetaDestino<span class="sign">.</span>Border <span class="sign">=</span> Border<span class="sign">.</span>None
+  wEtiquetaDestino<span class="sign">.</span>BackColor <span class="sign">=</span> Color<span class="sign">.</span>Background
+  wEtiquetaDestino<span class="sign">.</span>ReadOnly <span class="sign">=</span> <span class="keyword">TRUE</span>
+  
+  wCajaV <span class="sign">=</span> <span class="keyword">NEW</span> VBox<span class="sign">(</span>wCajaH<span class="sign">)</span>
+  wCajaV<span class="sign">.</span>Resize<span class="sign">(</span>100<span class="sign">,</span> 32<span class="sign">)</span>
+  wBotonCancelar <span class="sign">=</span> <span class="keyword">NEW</span> Button<span class="sign">(</span>wCajaV<span class="sign">)</span> <span class="keyword">AS</span> <span class="quote">"wBotonCancelar"</span>
+  wBotonCancelar<span class="sign">.</span>Resize<span class="sign">(</span>100<span class="sign">,</span> 32<span class="sign">)</span>
+  wBotonCancelar<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">"Cancelar"</span>
+  wBotonCancelar<span class="sign">.</span>Picture <span class="sign">=</span> Picture<span class="sign">[</span><span class="quote">"icon:/16/cancel"</span><span class="sign">]</span>
+  
+  wBotonReiniciar <span class="sign">=</span> <span class="keyword">NEW</span> Button<span class="sign">(</span>wCajaV<span class="sign">)</span> <span class="keyword">AS</span> <span class="quote">"wBotonReiniciar"</span>
+  wBotonReiniciar<span class="sign">.</span>Resize<span class="sign">(</span>100<span class="sign">,</span> 32<span class="sign">)</span>
+  wBotonReiniciar<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">"Reiniciar"</span>
+  wBotonReiniciar<span class="sign">.</span>Picture <span class="sign">=</span> Picture<span class="sign">[</span><span class="quote">"icon:/16/refresh"</span><span class="sign">]</span>
+  wBotonReiniciar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">FALSE</span>
+  
+  wEtiquetaVelocidad <span class="sign">=</span> <span class="keyword">NEW</span> TextLabel<span class="sign">(</span>wCajaV<span class="sign">)</span>
+  wEtiquetaVelocidad<span class="sign">.</span>AutoResize <span class="sign">=</span> <span class="keyword">TRUE</span>
+  wEtiquetaVelocidad<span class="sign">.</span>Resize<span class="sign">(</span>100<span class="sign">,</span> 32<span class="sign">)</span>
+  wEtiquetaVelocidad<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">""</span>
+  
+  
+  
+  wCajaV <span class="sign">=</span> <span class="keyword">NEW</span> VBox<span class="sign">(</span>wCajaH<span class="sign">)</span>
+  wCajaV<span class="sign">.</span>Resize<span class="sign">(</span>100<span class="sign">,</span> 32<span class="sign">)</span>
+  wBotonVer <span class="sign">=</span> <span class="keyword">NEW</span> Button<span class="sign">(</span>wCajaV<span class="sign">)</span> <span class="keyword">AS</span> <span class="quote">"wBotonVer"</span>
+  wBotonVer<span class="sign">.</span>Resize<span class="sign">(</span>70<span class="sign">,</span> 32<span class="sign">)</span>
+  wBotonVer<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">"Ver"</span>
+  wBotonVer<span class="sign">.</span>Picture <span class="sign">=</span> Picture<span class="sign">[</span><span class="quote">"icon:/16/play"</span><span class="sign">]</span>
+  
+  wEtiquetaTiempo <span class="sign">=</span> <span class="keyword">NEW</span> TextLabel<span class="sign">(</span>wCajaV<span class="sign">)</span>
+  wEtiquetaTiempo<span class="sign">.</span>AutoResize <span class="sign">=</span> <span class="keyword">TRUE</span>
+  wEtiquetaTiempo<span class="sign">.</span>Resize<span class="sign">(</span>100<span class="sign">,</span> 32<span class="sign">)</span>
+  wEtiquetaTiempo<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">""</span>
+  <span class="squote">' wSeparador.Width = vBoxPadre.Width '</span>
+  <span class="squote">' 
+  '</span>wCajaH<span class="sign">.</span>Background <span class="sign">=</span> Color<span class="sign">.</span>RGB<span class="sign">(</span><span class="keyword">CInt</span><span class="sign">(</span><span class="keyword">Rnd</span><span class="sign">(</span>0 <span class="sign">-</span> 255<span class="sign">)</span><span class="sign">)</span><span class="sign">,</span> <span class="keyword">CInt</span><span class="sign">(</span><span class="keyword">Rnd</span><span class="sign">(</span>0 <span class="sign">-</span> 255<span class="sign">)</span><span class="sign">)</span><span class="sign">,</span> <span class="keyword">CInt</span><span class="sign">(</span><span class="keyword">Rnd</span><span class="sign">(</span>0 <span class="sign">-</span> 255<span class="sign">)</span><span class="sign">)</span><span class="sign">)</span>  <span class="squote">'
+  '</span> 
+  <span class="squote">' wCajaH.Reparent(vBoxPadre) '</span>
+  <span class="squote">' vBoxPadre.Reparent(FMain.ScrollView1) '</span>
+ 
+ 
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2fCancelarDescarga"></a>
+<a name="robo87"></a><h2>NuevaDescarga.class/CancelarDescarga [ Metodos ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_metodos.html#robo_top_of_doc">Metodos</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>CancelarDescarga</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>CancelarDescarga</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  oBajarArchivo<span class="sign">.</span><strong>CancelarDescarga</strong><span class="sign">(</span><span class="sign">)</span>
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2fDescargar"></a>
+<a name="robo90"></a><h2>NuevaDescarga.class/Descargar [ Metodos ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_metodos.html#robo_top_of_doc">Metodos</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>Descargar</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>Descargar</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  Object<span class="sign">.</span>Attach<span class="sign">(</span>oBajarArchivo<span class="sign">,</span> <span class="keyword">ME</span><span class="sign">,</span> <span class="quote">"oBajarArchivo"</span><span class="sign">)</span>
+  oBajarArchivo<span class="sign">.</span><strong>Descargar</strong><span class="sign">(</span><span class="sign">)</span>
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2fInicializarDescarga"></a>
+<a name="robo91"></a><h2>NuevaDescarga.class/InicializarDescarga [ Metodos ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_metodos.html#robo_top_of_doc">Metodos</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>InicializarDescarga</strong>(sDireccion AS String, sCarpetaDestino AS String, sNomArchivo AS String)
+</pre>
+<p class="item_name">ARGUMENTS</p>
+<pre>   sDireccion AS String
+   sCarpetaDestino AS String
+   sNomArchivo AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>InicializarDescarga</strong><span class="sign">(</span>sDireccion <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">,</span> sCarpetaDestino <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">,</span> sNomArchivo <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">)</span>
+  oBajarArchivo <span class="sign">=</span> <span class="keyword">NEW</span> BajarArchivo<span class="sign">(</span>sDireccion<span class="sign">,</span> sCarpetaDestino<span class="sign">,</span> sNomArchivo<span class="sign">)</span>
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2foBajarArchivo5fAvance"></a>
+<a name="robo94"></a><h2>NuevaDescarga.class/oBajarArchivo_Avance [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>oBajarArchivo_Avance</strong>()
+
+ Toma la señal Avance y actualiza el porcentaje y velocidad de descarga
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>oBajarArchivo_Avance</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  wBarraProgreso<span class="sign">.</span>Value <span class="sign">=</span> <span class="sign">(</span>oBajarArchivo<span class="sign">.</span>Porcentaje <span class="sign">/</span> 100<span class="sign">)</span>
+  <span class="keyword">IF</span> oBajarArchivo<span class="sign">.</span>Velocidad <span class="sign">&lt;</span><span class="sign">&gt;</span> <span class="quote">""</span> <span class="keyword">THEN</span> wEtiquetaVelocidad<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">"&lt;i&gt;"</span> <span class="sign">&amp;</span> oBajarArchivo<span class="sign">.</span>Velocidad <span class="sign">&amp;</span> <span class="quote">"K/s&lt;/i&gt;"</span>
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2foBajarArchivo5fDescargaCancelada"></a>
+<a name="robo96"></a><h2>NuevaDescarga.class/oBajarArchivo_DescargaCancelada [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>oBajarArchivo_DescargaCancelada</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>oBajarArchivo_DescargaCancelada</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  wBarraProgreso<span class="sign">.</span>Enabled <span class="sign">=</span> <span class="keyword">FALSE</span>
+  wBotonEliminar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">TRUE</span>
+  wBotonCancelar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">FALSE</span>
+  wBotonReiniciar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">TRUE</span>
+  wEtiquetaEstado<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">"Descarga Cancelada ("</span> <span class="sign">&amp;</span> oBajarArchivo<span class="sign">.</span>Texto_Error <span class="sign">&amp;</span> <span class="quote">")"</span>
+  wEtiquetaEstado<span class="sign">.</span>Pos <span class="sign">=</span> 0
+  wEtiquetaDestino<span class="sign">.</span>Text <span class="sign">=</span> oBajarArchivo<span class="sign">.</span>Nombre_Archivo
+  wEtiquetaDestino<span class="sign">.</span>Pos <span class="sign">=</span> 0
+  tTimer<span class="sign">.</span>Stop<span class="sign">(</span><span class="sign">)</span>
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2foBajarArchivo5fDescargando"></a>
+<a name="robo98"></a><h2>NuevaDescarga.class/oBajarArchivo_Descargando [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>oBajarArchivo_Descargando</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>oBajarArchivo_Descargando</strong><span class="sign">(</span><span class="sign">)</span>
+  wBarraProgreso<span class="sign">.</span>Enabled <span class="sign">=</span> <span class="keyword">TRUE</span>
+  wBotonReiniciar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">FALSE</span>
+  wBotonEliminar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">FALSE</span>
+  wBotonCancelar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">TRUE</span>
+  wEtiquetaEstado<span class="sign">.</span>Text <span class="sign">=</span> oBajarArchivo<span class="sign">.</span>Direccion_Descarga
+  wEtiquetaDestino<span class="sign">.</span>Text <span class="sign">=</span> oBajarArchivo<span class="sign">.</span>Nombre_Archivo
+  wEtiquetaEstado<span class="sign">.</span>Pos <span class="sign">=</span> 0
+  wEtiquetaDestino<span class="sign">.</span>Pos <span class="sign">=</span> 0
+  tTimer<span class="sign">.</span>Start<span class="sign">(</span><span class="sign">)</span>
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2foBajarArchivo5fFinalizado"></a>
+<a name="robo100"></a><h2>NuevaDescarga.class/oBajarArchivo_Finalizado [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>oBajarArchivo_Finalizado</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>oBajarArchivo_Finalizado</strong><span class="sign">(</span><span class="sign">)</span>
+  wBotonCancelar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">FALSE</span>
+  wBotonEliminar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">TRUE</span>
+  wEtiquetaEstado<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">"Descarga Finalizada ("</span> <span class="sign">&amp;</span> oBajarArchivo<span class="sign">.</span>Direccion_Descarga <span class="sign">&amp;</span> <span class="quote">")"</span>
+  wEtiquetaDestino<span class="sign">.</span>Text <span class="sign">=</span> oBajarArchivo<span class="sign">.</span>Nombre_Archivo
+  wEtiquetaEstado<span class="sign">.</span>Pos <span class="sign">=</span> 0
+  wEtiquetaDestino<span class="sign">.</span>Pos <span class="sign">=</span> 0
+  tTimer<span class="sign">.</span>Stop<span class="sign">(</span><span class="sign">)</span>
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2fTiempoTranscurrido"></a>
+<a name="robo102"></a><h2>NuevaDescarga.class/TiempoTranscurrido [ Metodos ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_metodos.html#robo_top_of_doc">Metodos</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE SUB <strong>TiempoTranscurrido</strong>() AS String
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">SUB</span> <strong>TiempoTranscurrido</strong><span class="sign">(</span><span class="sign">)</span> <span class="keyword">AS</span> <span class="keyword">String</span>
+  
+  <span class="keyword">RETURN</span> <span class="keyword">Time</span><span class="sign">(</span>0<span class="sign">,</span> 0<span class="sign">,</span> <span class="keyword">DateDiff</span><span class="sign">(</span>oBajarArchivo<span class="sign">.</span>Hora_Comienzo<span class="sign">,</span> <span class="keyword">Now</span><span class="sign">(</span><span class="sign">)</span><span class="sign">,</span> gb<span class="sign">.</span><span class="keyword">Second</span><span class="sign">)</span><span class="sign">)</span>
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2ftTimer5fTimer"></a>
+<a name="robo104"></a><h2>NuevaDescarga.class/tTimer_Timer [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>tTimer_Timer</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>tTimer_Timer</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  wEtiquetaTiempo<span class="sign">.</span>Text <span class="sign">=</span> <a href="#robo102">TiempoTranscurrido</a><span class="sign">(</span><span class="sign">)</span>  
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2fwBotonCancelar5fClick"></a>
+<a name="robo105"></a><h2>NuevaDescarga.class/wBotonCancelar_Click [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>wBotonCancelar_Click</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>wBotonCancelar_Click</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  oBajarArchivo<span class="sign">.</span><a href="./BajarArchivo_class.html#robo26">CancelarDescarga</a><span class="sign">(</span><span class="sign">)</span>  
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2fwBotonEliminar5fClick"></a>
+<a name="robo107"></a><h2>NuevaDescarga.class/wBotonEliminar_Click [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>wBotonEliminar_Click</strong>()
+
+ Simplemente elimina el contenedor grafico, no elimina el archivo
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>wBotonEliminar_Click</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  wCajaH<span class="sign">.</span>Delete<span class="sign">(</span><span class="sign">)</span>
+  wSeparador<span class="sign">.</span>Delete<span class="sign">(</span><span class="sign">)</span>
+  FMain<span class="sign">.</span>Numero_Descargas <span class="sign">=</span> <span class="sign">-</span>1
+  FMain<span class="sign">.</span><a href="./FMain_class~.html#robo78">Redimensionar</a><span class="sign">(</span><span class="sign">)</span>
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2fwBotonReiniciar5fClick"></a>
+<a name="robo109"></a><h2>NuevaDescarga.class/wBotonReiniciar_Click [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>wBotonReiniciar_Click</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>wBotonReiniciar_Click</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  oBajarArchivo<span class="sign">.</span><a href="./BajarArchivo_class~.html#robo29">Descargar</a><span class="sign">(</span><span class="sign">)</span>
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="NuevaDescarga2eclass2fwBotonVer5fClick"></a>
+<a name="robo112"></a><h2>NuevaDescarga.class/wBotonVer_Click [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo6">NuevaDescarga.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>wBotonVer_Click</strong>()
+
+ Abre un reproductor para ver el video simplemente pasandole la ruta del archivo o usa el reproductor interno
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>wBotonVer_Click</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  <span class="keyword">DIM</span> wPantalla <span class="keyword">AS</span> VerVideo
+  <span class="keyword">IF</span> FMain<span class="sign">.</span>Reproductor <span class="sign">=</span> <span class="quote">"REPRODUCTORINTERNO"</span> <span class="keyword">THEN</span> 
+    wPantalla <span class="sign">=</span> <span class="keyword">NEW</span> VerVideo<span class="sign">(</span>oBajarArchivo<span class="sign">.</span>Nombre_Archivo<span class="sign">)</span>
+    wPantalla<span class="sign">.</span>Show<span class="sign">(</span><span class="sign">)</span>
+  <span class="keyword">ELSE</span> 
+    <span class="keyword">SHELL</span> FMain<span class="sign">.</span>Reproductor <span class="sign">&amp;</span> <span class="quote">" "</span> <span class="sign">&amp;</span> oBajarArchivo<span class="sign">.</span>Nombre_Archivo
+  <span class="keyword">ENDIF</span> 
+  
+<span class="keyword">END</span>
+</pre>
+
+</div> <!-- content -->
+<div id="footer">
+<p>Generated from ./Source/NuevaDescarga.class with <a href="http://www.xs4all.nl/~rfsber/Robo/robodoc.html">ROBODoc</a> V4.99.38 on Wed Dec 14 2011 01:40:47
+</p>
+</div> <!-- footer -->
+</body>
+</html>

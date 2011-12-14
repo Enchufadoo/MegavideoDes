@@ -1,0 +1,422 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
+<link rel="stylesheet" href="./robodoc.css" type="text/css" />
+<title>./Source/BajarArchivo.class</title>
+<!-- Source: ./Source/BajarArchivo.class -->
+<!-- Generated with ROBODoc Version 4.99.38 (Feb  5 2010) -->
+</head>
+<body>
+<div id="logo">
+<a name="robo_top_of_doc">Documentacion Proyecto: MegavideoDes  <img src=" " width="50"   /></a>
+</div> <!-- logo -->
+<div id="navigation">
+<a class="menuitem" href="./toc_index.html#top">Table of Contents</a>
+<a class="menuitem" href="./robo_sourcefiles.html#top">Sourcefiles</a>
+<a class="menuitem" href="./masterindex.html#top">Index</a>
+<a class="menuitem" href="./robo_event.html#top">Events</a>
+<a class="menuitem" href="./robo_modules.html#top">Modules</a>
+<a class="menuitem" href="./robo_metodos.html#top">Metodos</a>
+<a class="menuitem" href="./robo_procedure.html#top">Procedure</a>
+</div> <!-- navigation -->
+<div id="content">
+<hr />
+<a name="BajarArchivo2eclass2fDefinicion"></a>
+<a name="robo1"></a><h2>BajarArchivo.class/Definicion [ Modules ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_modules.html#robo_top_of_doc">Modules</a> ]</p>
+<p class="item_name">DESCRIPTION</p>
+<pre> Clase que se comunica con wget crea una descarga, la detiene, y toma los mensajes que envia
+ Genera eventos para las distintas situaciones 
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="squote">' Gambas class file '</span>
+
+<span class="keyword">PRIVATE</span> sDireccion <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PRIVATE</span> sCarpetaDestino <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PRIVATE</span> sArchivoSalida <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PRIVATE</span> sNomArchivo <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PRIVATE</span> sError <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PRIVATE</span> bError <span class="keyword">AS</span> Boolean
+<span class="keyword">PRIVATE</span> bDebug <span class="keyword">AS</span> Boolean
+<span class="keyword">PRIVATE</span> bDatosInvalidos <span class="keyword">AS</span> Boolean
+<span class="keyword">PRIVATE</span> rExpresion <span class="keyword">AS</span> Regexp
+<span class="keyword">PRIVATE</span> iPorcentaje <span class="keyword">AS</span> Integer
+<span class="keyword">PRIVATE</span> sVelocidad <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PRIVATE</span> hProceso <span class="keyword">AS</span> Process
+<span class="keyword">PRIVATE</span> dComienzo <span class="keyword">AS</span> <span class="keyword">Date</span>
+<span class="keyword">PRIVATE</span> sTotalDescargado <span class="keyword">AS</span> Integer
+
+<span class="keyword">PROPERTY</span> <span class="keyword">READ</span> Porcentaje <span class="keyword">AS</span> Integer
+<span class="keyword">PROPERTY</span> <span class="keyword">READ</span> Nombre_Archivo <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PROPERTY</span> <span class="keyword">READ</span> Direccion_Descarga <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PROPERTY</span> <span class="keyword">READ</span> Hora_Comienzo <span class="keyword">AS</span> <span class="keyword">Date</span>
+<span class="keyword">PROPERTY</span> <span class="keyword">READ</span> Velocidad <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PROPERTY</span> <span class="keyword">READ</span> Texto_Error <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PROPERTY</span> <span class="keyword">READ</span> Total_Descargado <span class="keyword">AS</span> <span class="keyword">String</span>
+
+
+<span class="keyword">EVENT</span> Finalizado<span class="sign">(</span><span class="sign">)</span>
+<span class="keyword">EVENT</span> Avance<span class="sign">(</span><span class="sign">)</span>
+<span class="keyword">EVENT</span> DescargaCancelada<span class="sign">(</span><span class="sign">)</span>
+<span class="keyword">EVENT</span> Descargando<span class="sign">(</span><span class="sign">)</span>
+</pre>
+
+<hr />
+<a name="Clases2fBajarArchivo2eclass"></a>
+<a name="robo4"></a><h2>Clases/BajarArchivo.class [ Modules ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="./ZZIndiceRobodoc_class.html#robo2">Clases</a> ] [ <a href="./robo_modules.html#robo_top_of_doc">Modules</a> ]</p>
+
+<hr />
+<a name="BajarArchivo2eclass2f5fnew"></a>
+<a name="robo24"></a><h2>BajarArchivo.class/_new [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>_new</strong>(sDataDireccion AS String, sDataCarpetaDestino AS String, sDataNomArchivo AS String)
+
+ Toma datos y comprueba errores simples de acceso y nombre de archivo y destino
+</pre>
+<p class="item_name">ARGUMENTS</p>
+<pre>   sDataDireccion AS String
+   sDataCarpetaDestino AS String
+   sDataNomArchivo AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>_new</strong><span class="sign">(</span>sDataDireccion <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">,</span> sDataCarpetaDestino <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">,</span> sDataNomArchivo <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">)</span>
+  bDebug <span class="sign">=</span> <span class="keyword">TRUE</span>
+  
+  sDireccion <span class="sign">=</span> sDataDireccion
+  sCarpetaDestino <span class="sign">=</span> sDataCarpetaDestino
+  sNomArchivo <span class="sign">=</span> sDataNomArchivo
+  
+  <span class="keyword">IF</span> sNomArchivo <span class="sign">=</span> <span class="quote">""</span> <span class="keyword">THEN</span> sNomArchivo <span class="sign">=</span> File<span class="sign">.</span>Name<span class="sign">(</span>sDataDireccion<span class="sign">)</span>
+  <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">IsDir</span><span class="sign">(</span>sCarpetaDestino<span class="sign">)</span> <span class="keyword">THEN</span> 
+    <a href="./BajarArchivo_class~.html#robo33">Hay_Error</a><span class="sign">(</span><span class="quote">"No existe la carpeta destino"</span><span class="sign">,</span> <span class="quote">"<strong>_new</strong>()"</span><span class="sign">)</span>
+    <span class="keyword">RETURN</span>
+  <span class="keyword">ELSE</span> <span class="keyword">IF</span> <span class="keyword">Access</span><span class="sign">(</span>sCarpetaDestino<span class="sign">,</span> gb<span class="sign">.</span>Write<span class="sign">)</span> <span class="sign">=</span> <span class="keyword">FALSE</span> <span class="keyword">THEN</span> 
+    <a href="./BajarArchivo_class~.html#robo33">Hay_Error</a><span class="sign">(</span><span class="quote">"No tienes los permisos necesarios para crear un archivo en "</span> <span class="sign">&amp;</span> sCarpetaDestino<span class="sign">,</span> <span class="quote">"<strong>_new</strong>()"</span><span class="sign">)</span>
+    <span class="keyword">RETURN</span>
+  <span class="squote">'ELSE IF  aca agregar comprobacion de permisos '</span>
+  <span class="keyword">ELSE</span> <span class="keyword">IF</span> <span class="keyword">InStr</span><span class="sign">(</span>sNomArchivo<span class="sign">,</span> <span class="quote">"\\"</span><span class="sign">)</span> <span class="keyword">OR</span> Trim<span class="sign">(</span>sNomArchivo<span class="sign">)</span> <span class="sign">=</span> <span class="quote">""</span> <span class="keyword">THEN</span> 
+    <a href="./BajarArchivo_class~.html#robo33">Hay_Error</a><span class="sign">(</span><span class="quote">"Nombre de archivo invalido"</span><span class="sign">,</span> <span class="quote">"<strong>_new</strong>()"</span><span class="sign">)</span>
+    <span class="keyword">RETURN</span>
+  <span class="keyword">ENDIF</span> 
+    
+  sArchivoSalida <span class="sign">=</span> sCarpetaDestino <span class="sign">&amp;</span><span class="sign">/</span> sNomArchivo
+      
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fCancelarDescarga"></a>
+<a name="robo26"></a><h2>BajarArchivo.class/CancelarDescarga [ Metodos ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_metodos.html#robo_top_of_doc">Metodos</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>CancelarDescarga</strong>()
+
+ Cancela la descarga matando el proceso
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>CancelarDescarga</strong><span class="sign">(</span><span class="sign">)</span>
+  <span class="keyword">IF</span> hProceso <span class="sign">=</span> <span class="keyword">NULL</span> <span class="keyword">THEN</span> <span class="keyword">RETURN</span> 
+  <span class="keyword">IF</span> hProceso<span class="sign">.</span>State <span class="sign">=</span> Process<span class="sign">.</span>Running <span class="keyword">THEN</span>
+     <span class="keyword">TRY</span> hProceso<span class="sign">.</span>Kill<span class="sign">(</span><span class="sign">)</span>   
+  <span class="keyword">ENDIF</span>
+ 
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fComenzarDescargar"></a>
+<a name="robo28"></a><h2>BajarArchivo.class/ComenzarDescargar [ Metodos ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_metodos.html#robo_top_of_doc">Metodos</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE SUB <strong>ComenzarDescargar</strong>()
+
+ Crea el proceso y comienza descarga
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">SUB</span> <strong>ComenzarDescargar</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  <span class="keyword">IF</span> bError <span class="keyword">THEN</span> 
+    <span class="keyword">RAISE</span> DescargaCancelada
+    <span class="keyword">RETURN</span>
+  <span class="keyword">ENDIF</span> 
+    
+  
+  <span class="keyword">PRINT</span> <span class="quote">"Descargando "</span> <span class="sign">&amp;</span> sDireccion <span class="sign">&amp;</span> <span class="quote">"\nEn la carpeta"</span> <span class="sign">&amp;</span> sCarpetaDestino <span class="sign">&amp;</span> <span class="quote">"("</span> <span class="sign">&amp;</span> sArchivoSalida <span class="sign">&amp;</span> <span class="quote">")"</span>
+  
+  <span class="keyword">RAISE</span> Descargando<span class="sign">(</span><span class="sign">)</span>
+  
+  hProceso <span class="sign">=</span> <span class="keyword">EXEC</span> <span class="sign">[</span><span class="quote">"wget"</span><span class="sign">,</span> <span class="quote">"--user-agent=\"Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.99 Safari/533.4\""</span><span class="sign">,</span> sDireccion<span class="sign">,</span> <span class="quote">"-O"</span><span class="sign">,</span> sArchivoSalida<span class="sign">]</span> <span class="keyword">FOR</span> <span class="keyword">READ</span> <span class="keyword">AS</span> <span class="quote">"Process"</span>
+  dComienzo <span class="sign">=</span> <span class="keyword">Now</span><span class="sign">(</span><span class="sign">)</span>
+  
+  <span class="squote">'la opcion -N tira error 404 a veces y -c si no hay conexion hace como si se bajo el archivo sin reportar error o no se da '</span>
+  <span class="squote">'cuenta si es un archivo diferente '</span>
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fDescargar"></a>
+<a name="robo30"></a><h2>BajarArchivo.class/Descargar [ Metodos ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_metodos.html#robo_top_of_doc">Metodos</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>Descargar</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>Descargar</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  <a href="#robo28">ComenzarDescargar</a><span class="sign">(</span><span class="sign">)</span>
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fDireccion5fDescarga5fRead"></a>
+<a name="robo32"></a><h2>BajarArchivo.class/Direccion_Descarga_Read [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE FUNCTION <strong>Direccion_Descarga_Read</strong>() AS String
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">FUNCTION</span> <strong>Direccion_Descarga_Read</strong><span class="sign">(</span><span class="sign">)</span> <span class="keyword">AS</span> <span class="keyword">String</span>
+
+  <span class="keyword">RETURN</span> sDireccion  
+
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fHay5fError"></a>
+<a name="robo34"></a><h2>BajarArchivo.class/Hay_Error [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE SUB <strong>Hay_Error</strong>(sDataError AS String, sDataFunError AS String)
+
+ Controla que funcion emite el error y cual es este
+</pre>
+<p class="item_name">ARGUMENTS</p>
+<pre>   sDataError AS String
+   sDataFunError AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">SUB</span> <strong>Hay_Error</strong><span class="sign">(</span>sDataError <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">,</span> sDataFunError <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">)</span>
+  bError <span class="sign">=</span> <span class="keyword">TRUE</span>
+  <span class="keyword">IF</span> bDebug <span class="keyword">THEN</span> 
+    sError <span class="sign">=</span> sDataError <span class="sign">&amp;</span> <span class="quote">": "</span> <span class="sign">&amp;</span> sDataFunError
+  <span class="keyword">ELSE</span> 
+    sError <span class="sign">=</span> sDataError
+  <span class="keyword">ENDIF</span>
+  <span class="keyword">PRINT</span> sError
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fHora5fComienzo5fRead"></a>
+<a name="robo36"></a><h2>BajarArchivo.class/Hora_Comienzo_Read [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE FUNCTION <strong>Hora_Comienzo_Read</strong>() AS Date
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS Date
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">FUNCTION</span> <strong>Hora_Comienzo_Read</strong><span class="sign">(</span><span class="sign">)</span> <span class="keyword">AS</span> <span class="keyword">Date</span>
+
+  <span class="keyword">RETURN</span> dComienzo
+
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fNombre5fArchivo5fRead"></a>
+<a name="robo38"></a><h2>BajarArchivo.class/Nombre_Archivo_Read [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE FUNCTION <strong>Nombre_Archivo_Read</strong>() AS String
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">FUNCTION</span> <strong>Nombre_Archivo_Read</strong><span class="sign">(</span><span class="sign">)</span> <span class="keyword">AS</span> <span class="keyword">String</span>
+
+  <span class="keyword">RETURN</span> sArchivoSalida
+
+
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fPorcentaje5fRead"></a>
+<a name="robo39"></a><h2>BajarArchivo.class/Porcentaje_Read [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE FUNCTION <strong>Porcentaje_Read</strong>() AS Integer
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS Integer
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">FUNCTION</span> <strong>Porcentaje_Read</strong><span class="sign">(</span><span class="sign">)</span> <span class="keyword">AS</span> Integer
+
+  <span class="keyword">RETURN</span> iPorcentaje  
+
+
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fProcess5fError"></a>
+<a name="robo42"></a><h2>BajarArchivo.class/Process_Error [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>Process_Error</strong>(sDataError AS String)
+
+ wget emite los mensajes como si fueran errores, esto lo analiza y si hay algun dato util emite la señal avance
+</pre>
+<p class="item_name">ARGUMENTS</p>
+<pre>   sDataError AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>Process_Error</strong><span class="sign">(</span>sDataError <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">)</span>
+  <span class="keyword">DIM</span> bAvance <span class="keyword">AS</span> Boolean
+  
+  rExpresion <span class="sign">=</span> <span class="keyword">NEW</span> Regexp<span class="sign">(</span>sDataError<span class="sign">,</span> <span class="quote">"(\\d+)%"</span><span class="sign">)</span>
+  <span class="keyword">IF</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">.</span>Count <span class="sign">&gt;</span> 0 <span class="keyword">THEN</span> 
+    bAvance <span class="sign">=</span> <span class="keyword">TRUE</span>
+    <span class="keyword">TRY</span> iPorcentaje <span class="sign">=</span> <span class="keyword">CInt</span><span class="sign">(</span>rExpresion<span class="sign">.</span>SubMatches<span class="sign">[</span>1<span class="sign">]</span><span class="sign">.</span>Text<span class="sign">)</span>
+  <span class="keyword">ENDIF</span> 
+  
+  rExpresion <span class="sign">=</span> <span class="keyword">NEW</span> Regexp<span class="sign">(</span>sDataError<span class="sign">,</span> <span class="quote">"\\p{P}.+\\h(.+)K"</span><span class="sign">)</span>
+  <span class="keyword">IF</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">.</span>Count <span class="sign">&gt;</span> 0 <span class="keyword">THEN</span> 
+    bAvance <span class="sign">=</span> <span class="keyword">TRUE</span>
+    <span class="keyword">TRY</span> sVelocidad <span class="sign">=</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">[</span>1<span class="sign">]</span><span class="sign">.</span>Text
+  <span class="keyword">ENDIF</span> 
+  
+  rExpresion <span class="sign">=</span> <span class="keyword">NEW</span> Regexp<span class="sign">(</span>sDataError<span class="sign">,</span> <span class="quote">"\\h(.+)K\\h\\p{P}"</span><span class="sign">)</span>
+  <span class="keyword">IF</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">.</span>Count <span class="sign">&gt;</span> 0 <span class="keyword">THEN</span> 
+    bAvance <span class="sign">=</span> <span class="keyword">TRUE</span>
+    <span class="keyword">TRY</span> sTotalDescargado <span class="sign">=</span> <span class="keyword">CInt</span><span class="sign">(</span>rExpresion<span class="sign">.</span>SubMatches<span class="sign">[</span>1<span class="sign">]</span><span class="sign">.</span>Text<span class="sign">)</span>
+  <span class="keyword">ENDIF</span>
+  
+  <span class="keyword">IF</span> bAvance <span class="keyword">THEN</span> <span class="keyword">RAISE</span> Avance
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fProcess5fKill"></a>
+<a name="robo44"></a><h2>BajarArchivo.class/Process_Kill [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>Process_Kill</strong>()
+
+ Se llama cuando el proceso muere por alguna razon, si wget devuelve un valor distinto de 0 es por que hubo un error o fue des
+ truido el proceso
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>Process_Kill</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  <span class="keyword">IF</span> <span class="keyword">LAST</span><span class="sign">.</span>value <span class="sign">&lt;</span><span class="sign">&gt;</span> 0
+    sError <span class="sign">=</span> <span class="quote">"Error de wget"</span>
+    <a href="./BajarArchivo_class~.html#robo33">Hay_Error</a><span class="sign">(</span>sError<span class="sign">,</span> <span class="quote">"<strong>Process_Kill</strong>()"</span><span class="sign">)</span>
+    bError <span class="sign">=</span> <span class="keyword">TRUE</span>
+    <span class="keyword">RAISE</span> DescargaCancelada
+    <span class="keyword">RETURN</span>
+  <span class="keyword">ENDIF</span> 
+
+  <span class="squote">'Suponiendo que wget hizo todo bien lo cual es mucho! '</span>
+  <span class="squote">'iPorcentaje = 100 '</span>
+  <span class="keyword">RAISE</span> Avance <span class="squote">'lo dejo por si acaso '</span>
+  <span class="squote">'----------------------------------------------------- '</span>
+  
+  <span class="keyword">RAISE</span> Finalizado
+  
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fTexto5fError5fRead"></a>
+<a name="robo46"></a><h2>BajarArchivo.class/Texto_Error_Read [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE FUNCTION <strong>Texto_Error_Read</strong>() AS String
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">FUNCTION</span> <strong>Texto_Error_Read</strong><span class="sign">(</span><span class="sign">)</span> <span class="keyword">AS</span> <span class="keyword">String</span>
+
+  <span class="keyword">RETURN</span> sError
+
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fTotal5fDescargado5fRead"></a>
+<a name="robo47"></a><h2>BajarArchivo.class/Total_Descargado_Read [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE FUNCTION <strong>Total_Descargado_Read</strong>() AS String
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">FUNCTION</span> <strong>Total_Descargado_Read</strong><span class="sign">(</span><span class="sign">)</span> <span class="keyword">AS</span> <span class="keyword">String</span>
+
+  <span class="keyword">RETURN</span> sTotalDescargado  
+
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="BajarArchivo2eclass2fVelocidad5fRead"></a>
+<a name="robo50"></a><h2>BajarArchivo.class/Velocidad_Read [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo4">BajarArchivo.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE FUNCTION <strong>Velocidad_Read</strong>() AS String
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">FUNCTION</span> <strong>Velocidad_Read</strong><span class="sign">(</span><span class="sign">)</span> <span class="keyword">AS</span> <span class="keyword">String</span>
+
+  <span class="keyword">RETURN</span> sVelocidad  
+
+<span class="keyword">END</span>
+</pre>
+
+</div> <!-- content -->
+<div id="footer">
+<p>Generated from ./Source/BajarArchivo.class with <a href="http://www.xs4all.nl/~rfsber/Robo/robodoc.html">ROBODoc</a> V4.99.38 on Wed Dec 14 2011 01:40:47
+</p>
+</div> <!-- footer -->
+</body>
+</html>

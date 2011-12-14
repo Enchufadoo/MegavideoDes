@@ -1,0 +1,657 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
+<link rel="stylesheet" href="./robodoc.css" type="text/css" />
+<title>./Source/FMain.class~</title>
+<!-- Source: ./Source/FMain.class~ -->
+<!-- Generated with ROBODoc Version 4.99.38 (Feb  5 2010) -->
+</head>
+<body>
+<div id="logo">
+<a name="robo_top_of_doc">Documentacion Proyecto: MegavideoDes  <img src=" " width="50"   /></a>
+</div> <!-- logo -->
+<div id="navigation">
+<a class="menuitem" href="./toc_index.html#top">Table of Contents</a>
+<a class="menuitem" href="./robo_sourcefiles.html#top">Sourcefiles</a>
+<a class="menuitem" href="./masterindex.html#top">Index</a>
+<a class="menuitem" href="./robo_event.html#top">Events</a>
+<a class="menuitem" href="./robo_modules.html#top">Modules</a>
+<a class="menuitem" href="./robo_metodos.html#top">Metodos</a>
+<a class="menuitem" href="./robo_procedure.html#top">Procedure</a>
+</div> <!-- navigation -->
+<div id="content">
+<hr />
+<a name="FMain2eclass2fDefinicion"></a>
+<a name="robo8"></a><h2>FMain.class/Definicion [ Modules ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_modules.html#robo_top_of_doc">Modules</a> ]</p>
+<p class="item_name">DESCRIPTION</p>
+<pre> Clase principal del programa, tiene la mayoria de las funciones pero no gestiona las descargas
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="squote">' Gambas class file '</span>
+
+<span class="keyword">PRIVATE</span> hCliente <span class="keyword">AS</span> <span class="keyword">NEW</span> HttpClient <span class="keyword">AS</span> <span class="quote">"Client"</span>
+<span class="keyword">PRIVATE</span> sBuffer <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PRIVATE</span> sResultado <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PRIVATE</span> sCodigo <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PRIVATE</span> iLimpiar <span class="keyword">AS</span> Integer <span class="sign">=</span> 1
+<span class="keyword">PRIVATE</span> sCarpetaDialogo <span class="keyword">AS</span> <span class="keyword">String</span> <span class="sign">=</span> User<span class="sign">.</span>Home
+<span class="keyword">PRIVATE</span> sArchivoDestino <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PRIVATE</span> ArchivosEnDescarga <span class="keyword">AS</span> <span class="keyword">NEW</span> Object<span class="sign">[</span><span class="sign">]</span>
+<span class="keyword">PRIVATE</span> iNumDescargas <span class="keyword">AS</span> Integer <span class="sign">=</span> 0
+<span class="keyword">PRIVATE</span> bSalir <span class="keyword">AS</span> Boolean 
+<span class="keyword">PRIVATE</span> sTituloVideo <span class="keyword">AS</span> <span class="keyword">String</span> 
+<span class="keyword">PRIVATE</span> sReproductor <span class="keyword">AS</span> <span class="keyword">String</span>
+<span class="keyword">PRIVATE</span> bObteniendoPagina <span class="keyword">AS</span> Boolean
+<span class="keyword">PROPERTY</span> Numero_Descargas <span class="keyword">AS</span> Integer
+<span class="keyword">PROPERTY</span> Reproductor <span class="keyword">AS</span> <span class="keyword">String</span>
+</pre>
+
+<hr />
+<a name="Formularios2fFMain2eclass"></a>
+<a name="robo11"></a><h2>Formularios/FMain.class [ Modules ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="./ZZIndiceRobodoc_class.html#robo9">Formularios</a> ] [ <a href="./robo_modules.html#robo_top_of_doc">Modules</a> ]</p>
+
+<hr />
+<a name="FMain2eclass2fBajarVideo"></a>
+<a name="robo51"></a><h2>FMain.class/BajarVideo [ Procedure ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_procedure.html#robo_top_of_doc">Procedure</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE SUB <strong>BajarVideo</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">SUB</span> <strong>BajarVideo</strong><span class="sign">(</span><span class="sign">)</span>
+
+  <span class="keyword">DIM</span> Descarga <span class="keyword">AS</span> <span class="keyword">NEW</span> NuevaDescarga<span class="sign">(</span>VBox1<span class="sign">)</span>
+  
+  Descarga<span class="sign">.</span><a href="./NuevaDescarga_class~.html#robo92">InicializarDescarga</a><span class="sign">(</span>sResultado<span class="sign">,</span> File<span class="sign">.</span><span class="keyword">Dir</span><span class="sign">(</span>sArchivoDestino<span class="sign">)</span><span class="sign">,</span> File<span class="sign">.</span>Name<span class="sign">(</span>sArchivoDestino<span class="sign">)</span><span class="sign">)</span>
+  ArchivosEnDescarga<span class="sign">.</span>Add<span class="sign">(</span>Descarga<span class="sign">)</span>
+  
+  Descarga<span class="sign">.</span><a href="./BajarArchivo_class~.html#robo29">Descargar</a><span class="sign">(</span><span class="sign">)</span>
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fbtnComprobar5fClick"></a>
+<a name="robo53"></a><h2>FMain.class/btnComprobar_Click [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>btnComprobar_Click</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>btnComprobar_Click</strong><span class="sign">(</span><span class="sign">)</span>
+  btnDescargar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">FALSE</span>
+  <a href="./FMain_class.html#robo61">ComprobarDireccion</a><span class="sign">(</span>txtDireccion<span class="sign">.</span>Text<span class="sign">)</span>
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fbtnDescargar5fClick"></a>
+<a name="robo56"></a><h2>FMain.class/btnDescargar_Click [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>btnDescargar_Click</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>btnDescargar_Click</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  <span class="keyword">IF</span> sTituloVideo <span class="sign">=</span> <span class="quote">""</span> <span class="keyword">THEN</span> sTituloVideo <span class="sign">=</span> <span class="quote">"video"</span> <span class="sign">&amp;</span> sCodigo
+   
+  Dialog<span class="sign">.</span>Filter <span class="sign">=</span> <span class="sign">[</span><span class="quote">"*.*"</span><span class="sign">,</span> <span class="quote">""</span><span class="sign">]</span>
+  Dialog<span class="sign">.</span>Path <span class="sign">=</span> sCarpetaDialogo <span class="sign">&amp;</span><span class="sign">/</span> sTituloVideo
+  Dialog<span class="sign">.</span>Title <span class="sign">=</span> <span class="quote">"Guardar Archivo"</span>
+  <span class="keyword">IF</span> Dialog<span class="sign">.</span>SaveFile<span class="sign">(</span><span class="sign">)</span> <span class="keyword">THEN</span> <span class="keyword">RETURN</span>
+  <span class="keyword">WHILE</span> <span class="keyword">Exist</span><span class="sign">(</span>Dialog<span class="sign">.</span>Path<span class="sign">)</span> 
+    Message<span class="sign">.</span>Error<span class="sign">(</span><span class="quote">"&lt;i&gt;El archivo ya existe en el disco, escoje otro nombre&lt;/i&gt;"</span><span class="sign">)</span>
+    <span class="keyword">IF</span> Dialog<span class="sign">.</span>SaveFile<span class="sign">(</span><span class="sign">)</span> <span class="keyword">THEN</span> <span class="keyword">RETURN</span>
+  <span class="keyword">WEND</span>
+  
+  sCarpetaDialogo <span class="sign">=</span> File<span class="sign">.</span><span class="keyword">Dir</span><span class="sign">(</span>Dialog<span class="sign">.</span>Path<span class="sign">)</span>
+  sArchivoDestino <span class="sign">=</span> Dialog<span class="sign">.</span>Path
+  iNumDescargas <span class="sign">+</span><span class="sign">=</span> 1
+  <a href="#robo78">Redimensionar</a><span class="sign">(</span><span class="sign">)</span>
+  <a href="#robo51">BajarVideo</a><span class="sign">(</span><span class="sign">)</span>
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fbtnElegir5fClick"></a>
+<a name="robo57"></a><h2>FMain.class/btnElegir_Click [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>btnElegir_Click</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>btnElegir_Click</strong><span class="sign">(</span><span class="sign">)</span>
+
+  <span class="keyword">DIM</span> iResultado <span class="keyword">AS</span> Integer
+  <span class="keyword">DIM</span> wOpciones <span class="keyword">AS</span> Opciones
+  wOpciones <span class="sign">=</span> <span class="keyword">NEW</span> Opciones
+  iResultado <span class="sign">=</span> wOpciones<span class="sign">.</span>ShowModal<span class="sign">(</span><span class="sign">)</span>
+  
+
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fClient5fFinished"></a>
+<a name="robo60"></a><h2>FMain.class/Client_Finished [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>Client_Finished</strong>()
+
+ Toma la pagina y llama a los desencriptadores, si no hubo problemas aparece el boton de descarga
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>Client_Finished</strong><span class="sign">(</span><span class="sign">)</span>
+  <span class="keyword">DIM</span> sDireccion <span class="keyword">AS</span> <span class="keyword">String</span>
+  <span class="keyword">DIM</span> rExpresion <span class="keyword">AS</span> Regexp
+  <span class="keyword">DIM</span> iRetorno <span class="keyword">AS</span> Integer
+  
+  bObteniendoPagina <span class="sign">=</span> <span class="keyword">FALSE</span>
+  
+  <span class="squote">'Leemos los datos descargados (HTML) '</span>
+  <span class="keyword">IF</span> <span class="keyword">Lof</span><span class="sign">(</span>hCliente<span class="sign">)</span> <span class="keyword">THEN</span>
+      <span class="keyword">READ</span> <span class="sign">#</span>hCliente<span class="sign">,</span> sBuffer<span class="sign">,</span> <span class="keyword">Lof</span><span class="sign">(</span>hCliente<span class="sign">)</span>
+  <span class="keyword">ELSE</span> 
+    Message<span class="sign">.</span>Error<span class="sign">(</span><span class="quote">"Error descargando la pagina"</span><span class="sign">)</span>
+    <span class="keyword">RETURN</span> 
+  <span class="keyword">END</span> <span class="keyword">IF</span> 
+  
+  iRetorno <span class="sign">=</span> <a href="#robo63">DecodificarBuffer</a><span class="sign">(</span>sBuffer<span class="sign">)</span>
+  <span class="keyword">PRINT</span> sResultado
+  <span class="keyword">IF</span> iRetorno <span class="sign">=</span> 1 <span class="keyword">THEN</span> 
+    Message<span class="sign">.</span>Error<span class="sign">(</span><span class="quote">"Error obteniendo datos de Megavideo"</span><span class="sign">)</span>
+    <span class="keyword">RETURN</span> 
+  <span class="keyword">ELSE</span> <span class="keyword">IF</span> iRetorno <span class="sign">=</span> 2 <span class="keyword">THEN</span> 
+    Message<span class="sign">.</span>Error<span class="sign">(</span><span class="quote">"Error desencriptando datos de Megavideo"</span><span class="sign">)</span>
+    <span class="keyword">RETURN</span> 
+  <span class="keyword">ENDIF</span> 
+  
+  btnDescargar<span class="sign">.</span>Visible <span class="sign">=</span> <span class="keyword">TRUE</span>
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fComprobarDireccion"></a>
+<a name="robo62"></a><h2>FMain.class/ComprobarDireccion [ Procedure ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_procedure.html#robo_top_of_doc">Procedure</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE SUB <strong>ComprobarDireccion</strong>(sVideoUrl AS String)
+
+ Si es una direccion de video valida trata de descargar la pagina de megaupload para despues poder procesarla
+</pre>
+<p class="item_name">ARGUMENTS</p>
+<pre>   sVideoUrl AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">SUB</span> <strong>ComprobarDireccion</strong><span class="sign">(</span>sVideoUrl <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">)</span>
+  
+  <span class="keyword">IF</span> <a href="#robo76">ObtenerCodigo</a><span class="sign">(</span>sVideoUrl<span class="sign">)</span> <span class="keyword">THEN</span>
+      Message<span class="sign">.</span>Error<span class="sign">(</span><span class="quote">"&lt;b&gt;"</span> <span class="sign">&amp;</span> sVideoUrl <span class="sign">&amp;</span> <span class="quote">"&lt;/b&gt;"</span> <span class="sign">&amp;</span> <span class="quote">" No es un link de Megavideo valido"</span><span class="sign">)</span>
+      <span class="keyword">RETURN</span>
+  <span class="keyword">END</span> <span class="keyword">IF</span>
+  
+  <span class="keyword">IF</span> <span class="keyword">NOT</span> bObteniendoPagina <span class="keyword">THEN</span> 
+    bObteniendoPagina <span class="sign">=</span> <span class="keyword">TRUE</span>
+    hCliente<span class="sign">.</span>Close
+    hCliente<span class="sign">.</span>Async <span class="sign">=</span> <span class="keyword">TRUE</span>
+    hCliente<span class="sign">.</span>Timeout <span class="sign">=</span> 60
+    hCliente<span class="sign">.</span>URL <span class="sign">=</span> <span class="quote">"http://www.megavideo.com/?v="</span> <span class="sign">&amp;</span> sCodigo
+    hCliente<span class="sign">.</span>Get<span class="sign">(</span><span class="sign">)</span>
+    <span class="squote">'FMain.BtVer.Enabled = FALSE '</span>
+  <span class="keyword">ENDIF</span>   
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fDecodificarBuffer"></a>
+<a name="robo63"></a><h2>FMain.class/DecodificarBuffer [ Procedure ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_procedure.html#robo_top_of_doc">Procedure</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE SUB <strong>DecodificarBuffer</strong>(sBuffer AS String) AS Integer
+
+ Esta funcion obtiene los datos para que la otra funcoin <a href="#robo65">Desencriptador</a> los convierta en un link
+ obtenido de 
+</pre>
+<p class="item_name">ARGUMENTS</p>
+<pre>   sBuffer AS String
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS Integer
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">SUB</span> <strong>DecodificarBuffer</strong><span class="sign">(</span>sBuffer <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">)</span> <span class="keyword">AS</span> Integer
+  
+  <span class="keyword">DIM</span> rExpresion <span class="keyword">AS</span> Regexp
+  
+  <span class="keyword">DIM</span> sDesencriptado <span class="keyword">AS</span> <span class="keyword">String</span>
+  <span class="keyword">DIM</span> sReg3<span class="sign">,</span> sReg4<span class="sign">,</span> sReg5<span class="sign">,</span> sReg6 <span class="keyword">AS</span> <span class="keyword">String</span>
+    
+  rExpresion <span class="sign">=</span> <span class="keyword">NEW</span> Regexp<span class="sign">(</span>sBuffer<span class="sign">,</span> <span class="quote">"flashvars.title = \"(.+)\""</span><span class="sign">)</span>
+  <span class="keyword">IF</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">.</span>Count <span class="sign">&lt;</span> 0 <span class="keyword">THEN</span> 
+    sTituloVideo <span class="sign">=</span> <span class="quote">""</span>
+  <span class="keyword">ELSE</span> 
+    sTituloVideo <span class="sign">=</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">[</span>1<span class="sign">]</span><span class="sign">.</span>Text 
+  <span class="keyword">ENDIF</span> 
+    
+  rExpresion <span class="sign">=</span> <span class="keyword">NEW</span> Regexp<span class="sign">(</span>sBuffer<span class="sign">,</span> <span class="quote">"flashvars.k1 = \"([[:alnum:]]+)"</span><span class="sign">)</span>
+  <span class="keyword">IF</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">.</span>Count <span class="sign">&lt;</span> 0 <span class="keyword">THEN</span> 
+    <span class="squote">'Message.Error("El conversor de megavideo no funciona k1") '</span>
+    <span class="keyword">RETURN</span> 1
+  <span class="keyword">ELSE</span> 
+    sReg4 <span class="sign">=</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">[</span>1<span class="sign">]</span><span class="sign">.</span>Text 
+  <span class="keyword">ENDIF</span> 
+  
+  rExpresion <span class="sign">=</span> <span class="keyword">NEW</span> Regexp<span class="sign">(</span>sBuffer<span class="sign">,</span> <span class="quote">"flashvars.un = \"([[:alnum:]]+)"</span><span class="sign">)</span>
+  <span class="keyword">IF</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">.</span>Count <span class="sign">&lt;</span> 0 <span class="keyword">THEN</span> 
+    <span class="squote">'Message.Error("El conversor de megavideo no funciona un") '</span>
+    <span class="keyword">RETURN</span> 1
+  <span class="keyword">ELSE</span> 
+    sReg5 <span class="sign">=</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">[</span>1<span class="sign">]</span><span class="sign">.</span>Text 
+  <span class="keyword">ENDIF</span> 
+  
+  rExpresion <span class="sign">=</span> <span class="keyword">NEW</span> Regexp<span class="sign">(</span>sBuffer<span class="sign">,</span> <span class="quote">"flashvars.k2 = \"([[:alnum:]]+)"</span><span class="sign">)</span>
+  <span class="keyword">IF</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">.</span>Count <span class="sign">&lt;</span> 0 <span class="keyword">THEN</span> 
+    <span class="squote">'Message.Error("El conversor de megavideo no funciona k2") '</span>
+    <span class="keyword">RETURN</span> 1
+  <span class="keyword">ELSE</span> 
+    sReg6 <span class="sign">=</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">[</span>1<span class="sign">]</span><span class="sign">.</span>Text 
+  <span class="keyword">ENDIF</span> 
+  
+  rExpresion <span class="sign">=</span> <span class="keyword">NEW</span> Regexp<span class="sign">(</span>sBuffer<span class="sign">,</span> <span class="quote">"flashvars.s = \"([[:alnum:]]+)"</span><span class="sign">)</span>
+  <span class="keyword">IF</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">.</span>Count <span class="sign">&lt;</span> 0 <span class="keyword">THEN</span> 
+    <span class="keyword">RETURN</span> 1
+  <span class="keyword">ELSE</span> 
+    sReg3 <span class="sign">=</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">[</span>1<span class="sign">]</span><span class="sign">.</span>Text 
+  <span class="keyword">ENDIF</span> 
+  
+  <span class="keyword">PRINT</span> sReg3 <span class="sign">&amp;</span> <span class="quote">" "</span> <span class="sign">&amp;</span> sReg4 <span class="sign">&amp;</span> <span class="quote">" "</span> <span class="sign">&amp;</span> sReg5 <span class="sign">&amp;</span> <span class="quote">" "</span> <span class="sign">&amp;</span> sReg6
+  
+  <span class="keyword">TRY</span> sDesencriptado <span class="sign">=</span> <a href="#robo65">Desencriptador</a><span class="sign">(</span>sReg5<span class="sign">,</span> sReg4<span class="sign">,</span> sReg6<span class="sign">)</span>
+  
+  <span class="keyword">IF</span> <span class="keyword">ERROR</span> <span class="keyword">THEN</span> 
+    <span class="keyword">RETURN</span> 2
+  <span class="keyword">ENDIF</span> 
+  
+  sResultado <span class="sign">=</span> <span class="quote">"http://www"</span> <span class="sign">&amp;</span> sReg3 <span class="sign">&amp;</span> <span class="quote">".megavideo.com/files/"</span> <span class="sign">&amp;</span> sDesencriptado <span class="sign">&amp;</span> <span class="quote">"/"</span>
+  
+  <span class="keyword">RETURN</span> 0
+   
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fDesencriptador"></a>
+<a name="robo65"></a><h2>FMain.class/Desencriptador [ Procedure ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_procedure.html#robo_top_of_doc">Procedure</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE SUB <strong>Desencriptador</strong>(sTexto AS String, sKey1 AS String, sKey2 AS String) AS String
+</pre>
+<p class="item_name">ARGUMENTS</p>
+<pre>   sTexto AS String
+   sKey1 AS String
+   sKey2 AS String
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">SUB</span> <strong>Desencriptador</strong><span class="sign">(</span>sTexto <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">,</span> sKey1 <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">,</span> sKey2 <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">)</span> <span class="keyword">AS</span> <span class="keyword">String</span>
+    
+  <span class="keyword">DIM</span> iReg3 <span class="keyword">AS</span> Integer <span class="sign">=</span> 0
+  <span class="keyword">DIM</span> sReg0 <span class="keyword">AS</span> <span class="keyword">String</span>
+  <span class="keyword">DIM</span> sReg1 <span class="keyword">AS</span> <span class="keyword">NEW</span> <span class="keyword">String</span><span class="sign">[</span><span class="sign">]</span>
+  <span class="keyword">DIM</span> sReg1b <span class="keyword">AS</span> <span class="keyword">String</span>
+  <span class="keyword">DIM</span> iReg6 <span class="keyword">AS</span> <span class="keyword">NEW</span> Integer<span class="sign">[</span><span class="sign">]</span>
+  <span class="keyword">DIM</span> iKey1 <span class="keyword">AS</span> Integer <span class="sign">=</span> <span class="keyword">CInt</span><span class="sign">(</span>sKey1<span class="sign">)</span>
+  <span class="keyword">DIM</span> iKey2 <span class="keyword">AS</span> Integer <span class="sign">=</span> <span class="keyword">CInt</span><span class="sign">(</span>sKey2<span class="sign">)</span>
+  <span class="keyword">DIM</span> iReg5 <span class="keyword">AS</span> Integer
+  <span class="keyword">DIM</span> iReg4 <span class="keyword">AS</span> Integer
+  <span class="keyword">DIM</span> sReg8 <span class="keyword">AS</span> <span class="keyword">String</span>
+  <span class="keyword">DIM</span> sTemp <span class="keyword">AS</span> <span class="keyword">String</span>
+  <span class="keyword">DIM</span> iTemp <span class="keyword">AS</span> Integer
+  <span class="keyword">DIM</span> sReg7 <span class="keyword">AS</span> <span class="keyword">NEW</span> <span class="keyword">String</span><span class="sign">[</span><span class="sign">]</span>
+  <span class="keyword">DIM</span> sReg12 <span class="keyword">AS</span> <span class="keyword">String</span>
+  <span class="keyword">DIM</span> sReg9 <span class="keyword">AS</span> <span class="keyword">String</span>
+  <span class="keyword">DIM</span> sReg2 <span class="keyword">AS</span> <span class="keyword">NEW</span> <span class="keyword">String</span><span class="sign">[</span><span class="sign">]</span>
+  
+  
+  <span class="keyword">WHILE</span> iReg3 <span class="sign">&lt;</span> <span class="keyword">Len</span><span class="sign">(</span>sTexto<span class="sign">)</span>
+    sReg0 <span class="sign">=</span> Mid<span class="sign">(</span>sTexto<span class="sign">,</span> iReg3 <span class="sign">+</span> 1<span class="sign">,</span> 1<span class="sign">)</span> 
+    <span class="keyword">SELECT</span> <span class="keyword">CASE</span> sReg0
+      <span class="keyword">CASE</span> <span class="quote">"0"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"0000"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"1"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"0001"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"2"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"0010"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"3"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"0011"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"4"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"0100"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"5"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"0101"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"6"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"0110"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"7"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"0111"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"8"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"1000"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"9"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"1001"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"a"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"1010"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"b"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"1011"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"c"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"1100"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"d"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"1101"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"e"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"1110"</span><span class="sign">)</span>
+      <span class="keyword">CASE</span> <span class="quote">"f"</span>
+        sReg1<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"1111"</span><span class="sign">)</span>
+    <span class="keyword">END</span> <span class="keyword">SELECT</span> 
+    iReg3 <span class="sign">+</span><span class="sign">=</span> 1
+    <span class="keyword">WEND</span>
+    sReg1b <span class="sign">=</span> sReg1<span class="sign">.</span>Join<span class="sign">(</span><span class="quote">""</span><span class="sign">)</span>
+    
+    sReg1<span class="sign">.</span>Clear<span class="sign">(</span><span class="sign">)</span>
+    
+    <span class="keyword">FOR</span> iTemp <span class="sign">=</span> 1 <span class="keyword">TO</span> <span class="keyword">Len</span><span class="sign">(</span>sReg1b<span class="sign">)</span>
+      sReg1<span class="sign">.</span>Add<span class="sign">(</span>Mid<span class="sign">(</span>sReg1b<span class="sign">,</span> iTemp<span class="sign">,</span> 1<span class="sign">)</span><span class="sign">)</span>
+    <span class="keyword">NEXT</span> 
+    iReg3 <span class="sign">=</span> 0
+    
+    <span class="keyword">WHILE</span> iReg3 <span class="sign">&lt;</span> 384
+      iKey1 <span class="sign">=</span> <span class="sign">(</span>iKey1 <span class="sign">*</span> 11 <span class="sign">+</span> 77213<span class="sign">)</span> <span class="keyword">MOD</span> 81371
+      iKey2 <span class="sign">=</span> <span class="sign">(</span>iKey2 <span class="sign">*</span> 17 <span class="sign">+</span> 92717<span class="sign">)</span> <span class="keyword">MOD</span> 192811
+      iReg6<span class="sign">.</span>Add<span class="sign">(</span><span class="sign">(</span>iKey1 <span class="sign">+</span> iKey2<span class="sign">)</span> <span class="keyword">MOD</span> 128<span class="sign">)</span>
+      iReg3 <span class="sign">+</span><span class="sign">=</span> 1
+    <span class="keyword">WEND</span> 
+    
+    
+    iReg3 <span class="sign">=</span> 256
+    
+    <span class="keyword">WHILE</span> iReg3 <span class="sign">&gt;</span><span class="sign">=</span> 0
+      iReg5 <span class="sign">=</span> iReg6<span class="sign">[</span>iReg3<span class="sign">]</span>
+      iReg4 <span class="sign">=</span> iReg3 <span class="keyword">MOD</span> 128
+      sReg8 <span class="sign">=</span> sReg1<span class="sign">[</span>iReg5<span class="sign">]</span>
+      sReg1<span class="sign">[</span>iReg5<span class="sign">]</span> <span class="sign">=</span> sReg1<span class="sign">[</span>iReg4<span class="sign">]</span>
+      sReg1<span class="sign">[</span>iReg4<span class="sign">]</span> <span class="sign">=</span> sReg8
+      iReg3 <span class="sign">-</span><span class="sign">=</span> 1
+    <span class="keyword">WEND</span> 
+    iReg3 <span class="sign">=</span> 0
+    
+    <span class="keyword">WHILE</span> iReg3 <span class="sign">&lt;</span> 128
+      sReg1<span class="sign">[</span>iReg3<span class="sign">]</span> <span class="sign">=</span> <span class="keyword">CStr</span><span class="sign">(</span><span class="keyword">CInt</span><span class="sign">(</span>sReg1<span class="sign">[</span>iReg3<span class="sign">]</span><span class="sign">)</span> <span class="keyword">XOR</span> <span class="sign">(</span>iReg6<span class="sign">[</span>iReg3 <span class="sign">+</span> 256<span class="sign">]</span> <span class="keyword">AND</span> 1<span class="sign">)</span><span class="sign">)</span>
+      iReg3 <span class="sign">+</span><span class="sign">=</span> 1
+    <span class="keyword">WEND</span> 
+    
+    sReg12 <span class="sign">=</span> sReg1<span class="sign">.</span>Join<span class="sign">(</span><span class="quote">""</span><span class="sign">)</span>
+    iReg3 <span class="sign">=</span> 0 
+    
+    <span class="keyword">WHILE</span> iReg3 <span class="sign">&lt;</span> <span class="keyword">Len</span><span class="sign">(</span>sReg12<span class="sign">)</span>
+      sReg9 <span class="sign">=</span> Mid<span class="sign">(</span>sReg12<span class="sign">,</span> iReg3 <span class="sign">+</span> 1<span class="sign">,</span> 4<span class="sign">)</span>
+      sReg7<span class="sign">.</span>Add<span class="sign">(</span>sReg9<span class="sign">)</span>
+      iReg3 <span class="sign">=</span> iReg3 <span class="sign">+</span> 4 
+    <span class="keyword">WEND</span> 
+    
+    iReg3 <span class="sign">=</span> 0
+    
+    <span class="keyword">WHILE</span> iReg3 <span class="sign">&lt;</span> sReg7<span class="sign">.</span>Length
+      sReg0 <span class="sign">=</span> sReg7<span class="sign">[</span>iReg3<span class="sign">]</span>
+      
+      <span class="keyword">SELECT</span> <span class="keyword">CASE</span> sReg0
+        <span class="keyword">CASE</span> <span class="quote">"0000"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"0"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"0001"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"1"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"0010"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"2"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"0011"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"3"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"0100"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"4"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"0101"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"5"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"0110"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"6"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"0111"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"7"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"1000"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"8"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"1001"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"9"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"1010"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"a"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"1011"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"b"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"1100"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"c"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"1101"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"d"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"1110"</span>
+          sReg2<span class="sign">.</span>Add<span class="sign">(</span><span class="quote">"e"</span><span class="sign">)</span>
+        <span class="keyword">CASE</span> <span class="quote">"1111"</span>
+          sReg2<span class="sign">.</span>add<span class="sign">(</span><span class="quote">"f"</span><span class="sign">)</span>
+      <span class="keyword">END</span> <span class="keyword">SELECT</span> 
+      iReg3 <span class="sign">+</span><span class="sign">=</span> 1
+    <span class="keyword">WEND</span>
+    <span class="keyword">RETURN</span> sReg2<span class="sign">.</span>Join<span class="sign">(</span><span class="quote">""</span><span class="sign">)</span>
+    
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fForm5fClose"></a>
+<a name="robo68"></a><h2>FMain.class/Form_Close [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>Form_Close</strong>()
+
+ Trata de cerrar todos los procesos de wget que hay antes de salir
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>Form_Close</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  
+  <span class="keyword">DIM</span> Descarga <span class="keyword">AS</span> NuevaDescarga
+  
+  <span class="keyword">FOR</span> <span class="keyword">EACH</span> Descarga <span class="keyword">IN</span> ArchivosEnDescarga
+    Descarga<span class="sign">.</span><a href="./BajarArchivo_class.html#robo26">CancelarDescarga</a><span class="sign">(</span><span class="sign">)</span>
+  <span class="keyword">NEXT</span>
+  
+  
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fForm5fOpen"></a>
+<a name="robo70"></a><h2>FMain.class/Form_Open [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>Form_Open</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>Form_Open</strong><span class="sign">(</span><span class="sign">)</span>
+  sReproductor <span class="sign">=</span> Settings<span class="sign">[</span><span class="quote">"Reproductor"</span><span class="sign">,</span> <span class="quote">"REPRODUCTORINTERNO"</span><span class="sign">]</span>
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fNumero5fDescargas5fRead"></a>
+<a name="robo72"></a><h2>FMain.class/Numero_Descargas_Read [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE FUNCTION <strong>Numero_Descargas_Read</strong>() AS Integer
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS Integer
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">FUNCTION</span> <strong>Numero_Descargas_Read</strong><span class="sign">(</span><span class="sign">)</span> <span class="keyword">AS</span> Integer
+
+  <span class="keyword">RETURN</span> iNumDescargas  
+
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fNumero5fDescargas5fWrite"></a>
+<a name="robo73"></a><h2>FMain.class/Numero_Descargas_Write [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE SUB <strong>Numero_Descargas_Write</strong>(Value AS Integer)
+</pre>
+<p class="item_name">ARGUMENTS</p>
+<pre>   Value AS Integer
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">SUB</span> <strong>Numero_Descargas_Write</strong><span class="sign">(</span>Value <span class="keyword">AS</span> Integer<span class="sign">)</span>
+
+  iNumDescargas <span class="sign">+</span><span class="sign">=</span> Value
+
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fObtenerCodigo"></a>
+<a name="robo76"></a><h2>FMain.class/ObtenerCodigo [ Procedure ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_procedure.html#robo_top_of_doc">Procedure</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE SUB <strong>ObtenerCodigo</strong>(sDireccion AS String) AS Integer
+
+ Trata de obtener el codigo de la descarga si devuelve 1 hubo un error
+</pre>
+<p class="item_name">ARGUMENTS</p>
+<pre>   sDireccion AS String
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS Integer
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">SUB</span> <strong>ObtenerCodigo</strong><span class="sign">(</span>sDireccion <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">)</span> <span class="keyword">AS</span> Integer
+  
+  <span class="keyword">DIM</span> sResultado <span class="keyword">AS</span> <span class="keyword">String</span>
+  <span class="keyword">DIM</span> rExpresion <span class="keyword">AS</span> Regexp
+  <span class="keyword">IF</span> <span class="keyword">Len</span><span class="sign">(</span>sDireccion<span class="sign">)</span> <span class="sign">=</span> 0 <span class="keyword">THEN</span> <span class="keyword">RETURN</span> 1
+  
+  rExpresion <span class="sign">=</span> <span class="keyword">NEW</span> Regexp<span class="sign">(</span>sDireccion<span class="sign">,</span> <span class="quote">"v=([[:alnum:]]+)"</span><span class="sign">)</span>
+  
+  
+  <span class="keyword">IF</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">.</span>Count <span class="sign">&gt;</span> 0 <span class="keyword">THEN</span> 
+    sCodigo <span class="sign">=</span> rExpresion<span class="sign">.</span>SubMatches<span class="sign">[</span>1<span class="sign">]</span><span class="sign">.</span>Text
+    <span class="keyword">RETURN</span> 0
+  <span class="keyword">ELSE</span> 
+    <span class="keyword">RETURN</span> 1
+  <span class="keyword">ENDIF</span> 
+  
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fRedimensionar"></a>
+<a name="robo78"></a><h2>FMain.class/Redimensionar [ Procedure ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_procedure.html#robo_top_of_doc">Procedure</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>Redimensionar</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>Redimensionar</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  VBox1<span class="sign">.</span>Resize<span class="sign">(</span>700<span class="sign">,</span> iNumDescargas <span class="sign">*</span> 150<span class="sign">)</span>
+  VBox1<span class="sign">.</span>Reparent<span class="sign">(</span>ScrollView1<span class="sign">)</span>  
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fReproductor5fRead"></a>
+<a name="robo79"></a><h2>FMain.class/Reproductor_Read [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE FUNCTION <strong>Reproductor_Read</strong>() AS String
+</pre>
+<p class="item_name">RETURN VALUE</p>
+<pre>    AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">FUNCTION</span> <strong>Reproductor_Read</strong><span class="sign">(</span><span class="sign">)</span> <span class="keyword">AS</span> <span class="keyword">String</span>
+
+    <span class="keyword">RETURN</span> sReproductor
+  
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2fReproductor5fWrite"></a>
+<a name="robo81"></a><h2>FMain.class/Reproductor_Write [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PRIVATE SUB <strong>Reproductor_Write</strong>(Value AS String)
+</pre>
+<p class="item_name">ARGUMENTS</p>
+<pre>   Value AS String
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PRIVATE</span> <span class="keyword">SUB</span> <strong>Reproductor_Write</strong><span class="sign">(</span>Value <span class="keyword">AS</span> <span class="keyword">String</span><span class="sign">)</span>
+
+  sReproductor <span class="sign">=</span> Value
+
+<span class="keyword">END</span>
+</pre>
+
+<hr />
+<a name="FMain2eclass2ftxtDireccion5fMouseDown"></a>
+<a name="robo84"></a><h2>FMain.class/txtDireccion_MouseDown [ Events ]</h2>
+
+<p>[ <a href="#robo_top_of_doc">Top</a> ] [ <a href="#robo11">FMain.class</a> ] [ <a href="./robo_event.html#robo_top_of_doc">Events</a> ]</p>
+<p class="item_name">SYNOPSIS</p>
+<pre>     PUBLIC SUB <strong>txtDireccion_MouseDown</strong>()
+</pre>
+<p class="item_name">SOURCE</p>
+<pre class="source"><span class="keyword">PUBLIC</span> <span class="keyword">SUB</span> <strong>txtDireccion_MouseDown</strong><span class="sign">(</span><span class="sign">)</span>
+  
+  <span class="keyword">IF</span> iLimpiar <span class="keyword">THEN</span> 
+    txtDireccion<span class="sign">.</span>Text <span class="sign">=</span> <span class="quote">""</span>
+    iLimpiar <span class="sign">=</span> 0
+  <span class="keyword">ENDIF</span> 
+<span class="keyword">END</span>
+</pre>
+
+</div> <!-- content -->
+<div id="footer">
+<p>Generated from ./Source/FMain.class~ with <a href="http://www.xs4all.nl/~rfsber/Robo/robodoc.html">ROBODoc</a> V4.99.38 on Wed Dec 14 2011 01:40:47
+</p>
+</div> <!-- footer -->
+</body>
+</html>
