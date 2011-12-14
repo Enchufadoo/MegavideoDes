@@ -1,0 +1,319 @@
+' Gambas class file
+'****h* Clases/BajarArchivo.class
+'****
+'****h* BajarArchivo.class/Definicion 
+'* DESCRIPTION
+'* Clase que se comunica con wget crea una descarga, la detiene, y toma los mensajes que envia
+'* Genera eventos para las distintas situaciones 
+'* SOURCE 
+' Gambas class file '
+
+PRIVATE sDireccion AS String
+PRIVATE sCarpetaDestino AS String
+PRIVATE sArchivoSalida AS String
+PRIVATE sNomArchivo AS String
+PRIVATE sError AS String
+PRIVATE bError AS Boolean
+PRIVATE bDebug AS Boolean
+PRIVATE bDatosInvalidos AS Boolean
+PRIVATE rExpresion AS Regexp
+PRIVATE iPorcentaje AS Integer
+PRIVATE sVelocidad AS String
+PRIVATE hProceso AS Process
+PRIVATE dComienzo AS Date
+PRIVATE sTotalDescargado AS Integer
+
+PROPERTY READ Porcentaje AS Integer
+PROPERTY READ Nombre_Archivo AS String
+PROPERTY READ Direccion_Descarga AS String
+PROPERTY READ Hora_Comienzo AS Date
+PROPERTY READ Velocidad AS String
+PROPERTY READ Texto_Error AS String
+PROPERTY READ Total_Descargado AS String
+
+
+EVENT Finalizado()
+EVENT Avance()
+EVENT DescargaCancelada()
+EVENT Descargando()
+
+
+'****
+
+'****e* BajarArchivo.class/_new [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB _new(sDataDireccion AS String, sDataCarpetaDestino AS String, sDataNomArchivo AS String)
+'*
+'* Toma datos y comprueba errores simples de acceso y nombre de archivo y destino
+'* ARGUMENTS
+'*   sDataDireccion AS String
+'*   sDataCarpetaDestino AS String
+'*   sDataNomArchivo AS String
+'* SOURCE 
+PUBLIC SUB _new(sDataDireccion AS String, sDataCarpetaDestino AS String, sDataNomArchivo AS String)
+  bDebug = TRUE
+  
+  sDireccion = sDataDireccion
+  sCarpetaDestino = sDataCarpetaDestino
+  sNomArchivo = sDataNomArchivo
+  
+  IF sNomArchivo = "" THEN sNomArchivo = File.Name(sDataDireccion)
+  IF NOT IsDir(sCarpetaDestino) THEN 
+    Hay_Error("No existe la carpeta destino", "_new()")
+    RETURN
+  ELSE IF Access(sCarpetaDestino, gb.Write) = FALSE THEN 
+    Hay_Error("No tienes los permisos necesarios para crear un archivo en " & sCarpetaDestino, "_new()")
+    RETURN
+  'ELSE IF  aca agregar comprobacion de permisos '
+  ELSE IF InStr(sNomArchivo, "\\") OR Trim(sNomArchivo) = "" THEN 
+    Hay_Error("Nombre de archivo invalido", "_new()")
+    RETURN
+  ENDIF 
+    
+  sArchivoSalida = sCarpetaDestino &/ sNomArchivo
+      
+END
+
+'****
+
+'****m* BajarArchivo.class/ComenzarDescargar [PRIVATE SUB]
+'* SYNOPSIS
+'*     PRIVATE SUB ComenzarDescargar()
+'*
+'* Crea el proceso y comienza descarga
+'* SOURCE 
+PRIVATE SUB ComenzarDescargar()
+  
+  IF bError THEN 
+    RAISE DescargaCancelada
+    RETURN
+  ENDIF 
+    
+  
+  PRINT "Descargando " & sDireccion & "\nEn la carpeta" & sCarpetaDestino & "(" & sArchivoSalida & ")"
+  
+  RAISE Descargando()
+  
+  hProceso = EXEC ["wget", "--user-agent=\"Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.99 Safari/533.4\"", sDireccion, "-O", sArchivoSalida] FOR READ AS "Process"
+  dComienzo = Now()
+  
+  'la opcion -N tira error 404 a veces y -c si no hay conexion hace como si se bajo el archivo sin reportar error o no se da '
+  'cuenta si es un archivo diferente '
+END
+
+
+'****
+
+'****e* BajarArchivo.class/Process_Kill [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Process_Kill()
+'*
+'* Se llama cuando el proceso muere por alguna razon, si wget devuelve un valor distinto de 0 es por que hubo un error o fue des
+'* truido el proceso
+'* SOURCE 
+PUBLIC SUB Process_Kill()
+  
+  IF LAST.value <> 0
+    sError = "Error de wget"
+    Hay_Error(sError, "Process_Kill()")
+    bError = TRUE
+    RAISE DescargaCancelada
+    RETURN
+  ENDIF 
+
+  'Suponiendo que wget hizo todo bien lo cual es mucho! '
+  'iPorcentaje = 100 '
+  RAISE Avance 'lo dejo por si acaso '
+  '----------------------------------------------------- '
+  
+  RAISE Finalizado
+  
+  
+END
+
+'****
+
+'****e* BajarArchivo.class/Process_Error [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Process_Error(sDataError AS String)
+'*
+'* wget emite los mensajes como si fueran errores, esto lo analiza y si hay algun dato util emite la señal avance
+'* ARGUMENTS
+'*   sDataError AS String
+'* SOURCE 
+PUBLIC SUB Process_Error(sDataError AS String)
+  DIM bAvance AS Boolean
+  
+  rExpresion = NEW Regexp(sDataError, "(\\d+)%")
+  IF rExpresion.SubMatches.Count > 0 THEN 
+    bAvance = TRUE
+    TRY iPorcentaje = CInt(rExpresion.SubMatches[1].Text)
+  ENDIF 
+  
+  rExpresion = NEW Regexp(sDataError, "\\p{P}.+\\h(.+)K")
+  IF rExpresion.SubMatches.Count > 0 THEN 
+    bAvance = TRUE
+    TRY sVelocidad = rExpresion.SubMatches[1].Text
+  ENDIF 
+  
+  rExpresion = NEW Regexp(sDataError, "\\h(.+)K\\h\\p{P}")
+  IF rExpresion.SubMatches.Count > 0 THEN 
+    bAvance = TRUE
+    TRY sTotalDescargado = CInt(rExpresion.SubMatches[1].Text)
+  ENDIF
+  
+  IF bAvance THEN RAISE Avance
+END
+
+'****
+
+'****e* BajarArchivo.class/Hay_Error [PRIVATE SUB]
+'* SYNOPSIS
+'*     PRIVATE SUB Hay_Error(sDataError AS String, sDataFunError AS String)
+'*
+'* Controla que funcion emite el error y cual es este
+'* ARGUMENTS
+'*   sDataError AS String
+'*   sDataFunError AS String
+'* SOURCE 
+PRIVATE SUB Hay_Error(sDataError AS String, sDataFunError AS String)
+  bError = TRUE
+  IF bDebug THEN 
+    sError = sDataError & ": " & sDataFunError
+  ELSE 
+    sError = sDataError
+  ENDIF
+  PRINT sError
+END
+
+'****
+
+'****m* BajarArchivo.class/CancelarDescarga [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB CancelarDescarga()
+'*
+'* Cancela la descarga matando el proceso
+'* SOURCE 
+PUBLIC SUB CancelarDescarga()
+  IF hProceso = NULL THEN RETURN 
+  IF hProceso.State = Process.Running THEN
+     TRY hProceso.Kill()   
+  ENDIF
+ 
+END
+
+
+'****
+
+'****e* BajarArchivo.class/Porcentaje_Read [PRIVATE FUNCTION]
+'* SYNOPSIS
+'*     PRIVATE FUNCTION Porcentaje_Read() AS Integer
+'* RETURN VALUE
+'*    AS Integer
+'* SOURCE 
+PRIVATE FUNCTION Porcentaje_Read() AS Integer
+
+  RETURN iPorcentaje  
+
+
+END
+
+'****
+
+'****m* BajarArchivo.class/Descargar [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Descargar()
+'* SOURCE 
+PUBLIC SUB Descargar()
+  
+  ComenzarDescargar()
+  
+END
+
+'****
+
+'****e* BajarArchivo.class/Nombre_Archivo_Read [PRIVATE FUNCTION]
+'* SYNOPSIS
+'*     PRIVATE FUNCTION Nombre_Archivo_Read() AS String
+'* RETURN VALUE
+'*    AS String
+'* SOURCE 
+PRIVATE FUNCTION Nombre_Archivo_Read() AS String
+
+  RETURN sArchivoSalida
+
+
+END
+
+
+'****
+
+'****e* BajarArchivo.class/Direccion_Descarga_Read [PRIVATE FUNCTION]
+'* SYNOPSIS
+'*     PRIVATE FUNCTION Direccion_Descarga_Read() AS String
+'* RETURN VALUE
+'*    AS String
+'* SOURCE 
+PRIVATE FUNCTION Direccion_Descarga_Read() AS String
+
+  RETURN sDireccion  
+
+END
+
+'****
+
+'****e* BajarArchivo.class/Hora_Comienzo_Read [PRIVATE FUNCTION]
+'* SYNOPSIS
+'*     PRIVATE FUNCTION Hora_Comienzo_Read() AS Date
+'* RETURN VALUE
+'*    AS Date
+'* SOURCE 
+PRIVATE FUNCTION Hora_Comienzo_Read() AS Date
+
+  RETURN dComienzo
+
+END
+
+'****
+
+'****e* BajarArchivo.class/Velocidad_Read [PRIVATE FUNCTION]
+'* SYNOPSIS
+'*     PRIVATE FUNCTION Velocidad_Read() AS String
+'* RETURN VALUE
+'*    AS String
+'* SOURCE 
+PRIVATE FUNCTION Velocidad_Read() AS String
+
+  RETURN sVelocidad  
+
+END
+
+'****
+
+'****e* BajarArchivo.class/Texto_Error_Read [PRIVATE FUNCTION]
+'* SYNOPSIS
+'*     PRIVATE FUNCTION Texto_Error_Read() AS String
+'* RETURN VALUE
+'*    AS String
+'* SOURCE 
+PRIVATE FUNCTION Texto_Error_Read() AS String
+
+  RETURN sError
+
+END
+
+'****
+
+'****e* BajarArchivo.class/Total_Descargado_Read [PRIVATE FUNCTION]
+'* SYNOPSIS
+'*     PRIVATE FUNCTION Total_Descargado_Read() AS String
+'* RETURN VALUE
+'*    AS String
+'* SOURCE 
+PRIVATE FUNCTION Total_Descargado_Read() AS String
+
+  RETURN sTotalDescargado  
+
+END
+
+'****

@@ -1,0 +1,249 @@
+' Gambas class file
+'****h* Formularios/VerVideo.class
+'****
+'****h* VerVideo.class/Definicion 
+'* DESCRIPTION
+'* Casi todo robado en la clase del ejemplo de Benoit Minisini 'Movie Player' que viene con gambas2 
+'* No funciona con GTK
+'* SOURCE 
+' Gambas class file '
+'------------------------------------------------------------------------------------------- '
+'Casi todo robado en la clase del ejemplo de Benoit Minisini 'Movie Player' que viene con gambas2 
+'-------------------------------------------------------------------------------------------- '
+PRIVATE $hProcess AS Process
+PRIVATE $bQuit AS Boolean
+PRIVATE $sPath AS String
+PRIVATE $bShow AS Boolean
+
+'****
+
+'****e* VerVideo.class/Form_Resize [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Form_Resize()
+'* SOURCE 
+PUBLIC SUB Form_Resize()
+
+  lblMoviePlayer.Move(8, 8, ME.ClientW - 16, ME.ClientH - panButton.H - 8)
+  panButton.Move(0, ME.CLientH - panButton.H, ME.CLientW)
+
+
+END
+
+'****
+
+'****e* VerVideo.class/btnPlay_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB btnPlay_Click()
+'* SOURCE 
+PUBLIC SUB btnPlay_Click()
+
+  IF $hProcess THEN
+    PRINT #$hProcess, " ";
+    btnPlay.Enabled = FALSE
+    btnPause.Enabled = TRUE
+    lblMoviePlayer.Show
+    'PRINT "CONTINUE" '
+    RETURN
+  ENDIF
+
+
+
+  WITH lblMoviePlayer
+    Form_Resize
+    .Show
+    '.Enabled = FALSE '
+  '  '.Mouse = Mouse.Default
+  '  Form_Resize '
+  '  '.Enabled = FALSE
+  END WITH
+
+  $bShow = TRUE
+
+  $hProcess = EXEC ["mplayer", "-wid", lblMoviePlayer.Handle, Conv$($sPath, Desktop.Charset, System.Charset)] FOR READ WRITE
+
+  btnStop.Enabled = TRUE
+  btnPlay.Enabled = FALSE
+  btnPause.Enabled = TRUE
+
+  'lblMoviePlayer.Hide '
+  timShow.Enabled = TRUE
+
+END
+
+'****
+
+'****e* VerVideo.class/btnPause_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB btnPause_Click()
+'* SOURCE 
+PUBLIC SUB btnPause_Click()
+
+  IF NOT $hProcess THEN RETURN
+  PRINT #$hProcess, " ";
+  '$hProcess.Send(" ") '("pause\n")
+  btnPlay.Enabled = TRUE
+  btnPause.Enabled = FALSE
+  'PRINT "PAUSE" '
+
+END
+
+'****
+
+'****e* VerVideo.class/btnStop_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB btnStop_Click()
+'* SOURCE 
+PUBLIC SUB btnStop_Click()
+
+  IF NOT $hProcess THEN RETURN
+  IF $bQuit THEN
+    $hProcess.Kill
+  ELSE
+    PRINT #$hProcess, "q";
+    $bQuit = TRUE
+  ENDIF
+
+END
+
+'****
+
+'****e* VerVideo.class/Process_Read [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Process_Read()
+'* SOURCE 
+PUBLIC SUB Process_Read()
+  
+  DIM sData AS String
+  
+  READ #LAST, sData, -255
+  
+END
+
+
+'****
+
+'****e* VerVideo.class/Process_Kill [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Process_Kill()
+'* SOURCE 
+PUBLIC SUB Process_Kill()
+
+  'PRINT "KILL" '
+
+  $hProcess = NULL
+  timShow.Enabled = FALSE
+  $bQuit = FALSE
+  $bShow = FALSE
+  btnPause.Enabled = FALSE
+  btnPlay.Enabled = TRUE
+  btnStop.Enabled = FALSE
+  lblMoviePlayer.Hide
+
+  'PRINT "STOP" '
+
+END
+
+
+'****
+
+'****p* VerVideo.class/StopMovie [PRIVATE SUB]
+'* SYNOPSIS
+'*     PRIVATE SUB StopMovie()
+'* SOURCE 
+PRIVATE SUB StopMovie()
+
+  IF NOT $hProcess THEN RETURN
+
+  $hProcess.Kill
+  WHILE $hProcess
+    WAIT
+  WEND
+
+END
+
+'****
+
+'****e* VerVideo.class/Form_Close [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Form_Close()
+'* SOURCE 
+PUBLIC SUB Form_Close()
+  
+  StopMovie
+  
+END
+
+
+'****
+
+'****e* VerVideo.class/btnOpen_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB btnOpen_Click()
+'* SOURCE 
+PUBLIC SUB btnOpen_Click()
+  
+  
+  
+END
+
+'****
+
+'****e* VerVideo.class/_new [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB _new(sDireccion AS String)
+'* ARGUMENTS
+'*   sDireccion AS String
+'* SOURCE 
+PUBLIC SUB _new(sDireccion AS String)
+  
+  $sPath = sDireccion
+  
+END
+
+
+'****
+
+'****e* VerVideo.class/Form_Open [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Form_Open()
+'* SOURCE 
+PUBLIC SUB Form_Open()
+  PRINT lblMoviePlayer.id
+  PRINT "Wid = "; Hex$(lblMoviePlayer.id)
+  StopMovie
+  btnPlay.Enabled = TRUE
+  btnPlay_Click
+  
+END
+
+'****
+
+'****e* VerVideo.class/Button1_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Button1_Click()
+'* SOURCE 
+PUBLIC SUB Button1_Click()
+
+  WITH lblMoviePlayer
+    PRINT .X; " "; .Y; " "; .W; " "; .H; " "; .Visible; " "; .Parent.Handle
+  END WITH
+
+END
+
+
+'****
+
+'****e* VerVideo.class/timShow_Timer [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB timShow_Timer()
+'* SOURCE 
+PUBLIC SUB timShow_Timer()
+
+  'lblMoviePlayer.Resize(1, 1) '
+  'lblMoviePlayer.Show '
+  FORM_Resize
+  timShow.Enabled = FALSE
+
+END
+
+'****

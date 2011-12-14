@@ -1,0 +1,546 @@
+' Gambas class file
+'****h* Formularios/FMain.class
+'****
+'****h* FMain.class/Definicion 
+'* DESCRIPTION
+'* Clase principal del programa, tiene la mayoria de las funciones pero no gestiona las descargas
+'* SOURCE 
+' Gambas class file '
+
+PRIVATE hCliente AS NEW HttpClient AS "Client"
+PRIVATE sBuffer AS String
+PRIVATE sResultado AS String
+PRIVATE sCodigo AS String
+PRIVATE iLimpiar AS Integer = 1
+PRIVATE sCarpetaDialogo AS String = User.Home
+PRIVATE sArchivoDestino AS String
+PRIVATE ArchivosEnDescarga AS NEW Object[]
+PRIVATE iNumDescargas AS Integer = 0
+PRIVATE bSalir AS Boolean 
+PRIVATE sTituloVideo AS String 
+PRIVATE sReproductor AS String
+PRIVATE bObteniendoPagina AS Boolean
+PROPERTY Numero_Descargas AS Integer
+PROPERTY Reproductor AS String
+
+
+'****
+
+'****p* FMain.class/ComprobarDireccion [PRIVATE SUB]
+'* SYNOPSIS
+'*     PRIVATE SUB ComprobarDireccion(sVideoUrl AS String)
+'*
+'* Si es una direccion de video valida trata de descargar la pagina de megaupload para despues poder procesarla
+'* ARGUMENTS
+'*   sVideoUrl AS String
+'* SOURCE 
+PRIVATE SUB ComprobarDireccion(sVideoUrl AS String)
+  
+  IF ObtenerCodigo(sVideoUrl) THEN
+      Message.Error("<b>" & sVideoUrl & "</b>" & " No es un link de Megavideo valido")
+      RETURN
+  END IF
+  
+  IF NOT bObteniendoPagina THEN 
+    bObteniendoPagina = TRUE
+    hCliente.Close
+    hCliente.Async = TRUE
+    hCliente.Timeout = 60
+    hCliente.URL = "http://www.megavideo.com/?v=" & sCodigo
+    hCliente.Get()
+    'FMain.BtVer.Enabled = FALSE '
+  ENDIF   
+END
+
+'****
+' falta algun mensaje que indique que esta analizando  la descarga o bajando la pagina
+'****e* FMain.class/Client_Finished [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Client_Finished()
+'*
+'* Toma la pagina y llama a los desencriptadores, si no hubo problemas aparece el boton de descarga
+'* SOURCE 
+PUBLIC SUB Client_Finished()
+  DIM sDireccion AS String
+  DIM rExpresion AS Regexp
+  DIM iRetorno AS Integer
+  
+  bObteniendoPagina = FALSE
+  
+  'Leemos los datos descargados (HTML) '
+  IF Lof(hCliente) THEN
+      READ #hCliente, sBuffer, Lof(hCliente)
+  ELSE 
+    Message.Error("Error descargando la pagina")
+    RETURN 
+  END IF 
+  
+  iRetorno = DecodificarBuffer(sBuffer)
+  PRINT sResultado
+  IF iRetorno = 1 THEN 
+    Message.Error("Error obteniendo datos de Megavideo")
+    RETURN 
+  ELSE IF iRetorno = 2 THEN 
+    Message.Error("Error desencriptando datos de Megavideo")
+    RETURN 
+  ENDIF 
+  
+  btnDescargar.Visible = TRUE
+  
+END
+
+'****
+
+'****e* FMain.class/btnComprobar_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB btnComprobar_Click()
+'* SOURCE 
+PUBLIC SUB btnComprobar_Click()
+  btnDescargar.Visible = FALSE
+  ComprobarDireccion(txtDireccion.Text)
+END
+
+'****
+
+'****e* FMain.class/Form_Open [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Form_Open()
+'* SOURCE 
+PUBLIC SUB Form_Open()
+  sReproductor = Settings["Reproductor", "REPRODUCTORINTERNO"]
+END
+
+
+'****
+
+'****e* FMain.class/btnDescargar_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB btnDescargar_Click()
+'* SOURCE 
+PUBLIC SUB btnDescargar_Click()
+  
+  IF sTituloVideo = "" THEN sTituloVideo = "video" & sCodigo
+   
+  Dialog.Filter = ["*.*", ""]
+  Dialog.Path = sCarpetaDialogo &/ sTituloVideo
+  Dialog.Title = "Guardar Archivo"
+  IF Dialog.SaveFile() THEN RETURN
+  WHILE Exist(Dialog.Path) 
+    Message.Error("<i>El archivo ya existe en el disco, escoje otro nombre</i>")
+    IF Dialog.SaveFile() THEN RETURN
+  WEND
+  
+  sCarpetaDialogo = File.Dir(Dialog.Path)
+  sArchivoDestino = Dialog.Path
+  iNumDescargas += 1
+  Redimensionar()
+  BajarVideo()
+  
+END
+
+'****
+
+'****p* FMain.class/ObtenerCodigo [PRIVATE SUB]
+'* SYNOPSIS
+'*     PRIVATE SUB ObtenerCodigo(sDireccion AS String) AS Integer
+'*
+'* Trata de obtener el codigo de la descarga si devuelve 1 hubo un error
+'* ARGUMENTS
+'*   sDireccion AS String
+'* RETURN VALUE
+'*    AS Integer
+'* SOURCE 
+PRIVATE SUB ObtenerCodigo(sDireccion AS String) AS Integer
+  
+  DIM sResultado AS String
+  DIM rExpresion AS Regexp
+  IF Len(sDireccion) = 0 THEN RETURN 1
+  
+  rExpresion = NEW Regexp(sDireccion, "v=([[:alnum:]]+)")
+  
+  
+  IF rExpresion.SubMatches.Count > 0 THEN 
+    sCodigo = rExpresion.SubMatches[1].Text
+    RETURN 0
+  ELSE 
+    RETURN 1
+  ENDIF 
+  
+  
+END
+
+'****
+
+'****e* FMain.class/txtDireccion_MouseDown [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB txtDireccion_MouseDown()
+'* SOURCE 
+PUBLIC SUB txtDireccion_MouseDown()
+  
+  IF iLimpiar THEN 
+    txtDireccion.Text = ""
+    iLimpiar = 0
+  ENDIF 
+END
+
+'****
+
+'****p* FMain.class/BajarVideo [PRIVATE SUB]
+'* SYNOPSIS
+'*     PRIVATE SUB BajarVideo()
+'* SOURCE 
+PRIVATE SUB BajarVideo()
+
+  DIM Descarga AS NEW NuevaDescarga(VBox1)
+  
+  Descarga.InicializarDescarga(sResultado, File.Dir(sArchivoDestino), File.Name(sArchivoDestino))
+  ArchivosEnDescarga.Add(Descarga)
+  
+  Descarga.Descargar()
+  
+END
+
+
+'****
+
+'****e* FMain.class/Form_Close [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Form_Close()
+'*
+'* Trata de cerrar todos los procesos de wget que hay antes de salir
+'* SOURCE 
+PUBLIC SUB Form_Close()
+  
+  
+  DIM Descarga AS NuevaDescarga
+  
+  FOR EACH Descarga IN ArchivosEnDescarga
+    Descarga.CancelarDescarga()
+  NEXT
+  
+  
+  
+END
+
+'****
+
+'****p* FMain.class/DecodificarBuffer [PRIVATE SUB]
+'* SYNOPSIS
+'*     PRIVATE SUB DecodificarBuffer(sBuffer AS String) AS Integer
+'*
+'* Esta funcion obtiene los datos para que la otra funcoin Desencriptador los convierta en un link
+'* obtenido de http://foros.cristalab.com/peliculas-completas-con-megavideo-y-actionscript-t68193/
+'* ARGUMENTS
+'*   sBuffer AS String
+'* RETURN VALUE
+'*    AS Integer
+'* SOURCE 
+PRIVATE SUB DecodificarBuffer(sBuffer AS String) AS Integer
+  
+  DIM rExpresion AS Regexp
+  
+  DIM sDesencriptado AS String
+  DIM sReg3, sReg4, sReg5, sReg6 AS String
+    
+  rExpresion = NEW Regexp(sBuffer, "flashvars.title = \"(.+)\"")
+  IF rExpresion.SubMatches.Count < 0 THEN 
+    sTituloVideo = ""
+  ELSE 
+    sTituloVideo = rExpresion.SubMatches[1].Text 
+  ENDIF 
+    
+  rExpresion = NEW Regexp(sBuffer, "flashvars.k1 = \"([[:alnum:]]+)")
+  IF rExpresion.SubMatches.Count < 0 THEN 
+    'Message.Error("El conversor de megavideo no funciona k1") '
+    RETURN 1
+  ELSE 
+    sReg4 = rExpresion.SubMatches[1].Text 
+  ENDIF 
+  
+  rExpresion = NEW Regexp(sBuffer, "flashvars.un = \"([[:alnum:]]+)")
+  IF rExpresion.SubMatches.Count < 0 THEN 
+    'Message.Error("El conversor de megavideo no funciona un") '
+    RETURN 1
+  ELSE 
+    sReg5 = rExpresion.SubMatches[1].Text 
+  ENDIF 
+  
+  rExpresion = NEW Regexp(sBuffer, "flashvars.k2 = \"([[:alnum:]]+)")
+  IF rExpresion.SubMatches.Count < 0 THEN 
+    'Message.Error("El conversor de megavideo no funciona k2") '
+    RETURN 1
+  ELSE 
+    sReg6 = rExpresion.SubMatches[1].Text 
+  ENDIF 
+  
+  rExpresion = NEW Regexp(sBuffer, "flashvars.s = \"([[:alnum:]]+)")
+  IF rExpresion.SubMatches.Count < 0 THEN 
+    RETURN 1
+  ELSE 
+    sReg3 = rExpresion.SubMatches[1].Text 
+  ENDIF 
+  
+  PRINT sReg3 & " " & sReg4 & " " & sReg5 & " " & sReg6
+  
+  TRY sDesencriptado = Desencriptador(sReg5, sReg4, sReg6)
+  
+  IF ERROR THEN 
+    RETURN 2
+  ENDIF 
+  
+  sResultado = "http://www" & sReg3 & ".megavideo.com/files/" & sDesencriptado & "/"
+  
+  RETURN 0
+   
+END
+
+
+'****
+
+'****p* FMain.class/Desencriptador [PRIVATE SUB]
+'* SYNOPSIS
+'*     PRIVATE SUB Desencriptador(sTexto AS String, sKey1 AS String, sKey2 AS String) AS String
+'*
+'* Obtenido http://foros.cristalab.com/peliculas-completas-con-megavideo-y-actionscript-t68193/
+'* ARGUMENTS
+'*   sTexto AS String
+'*   sKey1 AS String
+'*   sKey2 AS String
+'* RETURN VALUE
+'*    AS String
+'* SOURCE 
+PRIVATE SUB Desencriptador(sTexto AS String, sKey1 AS String, sKey2 AS String) AS String
+    
+  DIM iReg3 AS Integer = 0
+  DIM sReg0 AS String
+  DIM sReg1 AS NEW String[]
+  DIM sReg1b AS String
+  DIM iReg6 AS NEW Integer[]
+  DIM iKey1 AS Integer = CInt(sKey1)
+  DIM iKey2 AS Integer = CInt(sKey2)
+  DIM iReg5 AS Integer
+  DIM iReg4 AS Integer
+  DIM sReg8 AS String
+  DIM sTemp AS String
+  DIM iTemp AS Integer
+  DIM sReg7 AS NEW String[]
+  DIM sReg12 AS String
+  DIM sReg9 AS String
+  DIM sReg2 AS NEW String[]
+  
+  
+  WHILE iReg3 < Len(sTexto)
+    sReg0 = Mid(sTexto, iReg3 + 1, 1) 
+    SELECT CASE sReg0
+      CASE "0"
+        sReg1.Add("0000")
+      CASE "1"
+        sReg1.Add("0001")
+      CASE "2"
+        sReg1.Add("0010")
+      CASE "3"
+        sReg1.Add("0011")
+      CASE "4"
+        sReg1.Add("0100")
+      CASE "5"
+        sReg1.Add("0101")
+      CASE "6"
+        sReg1.Add("0110")
+      CASE "7"
+        sReg1.Add("0111")
+      CASE "8"
+        sReg1.Add("1000")
+      CASE "9"
+        sReg1.Add("1001")
+      CASE "a"
+        sReg1.Add("1010")
+      CASE "b"
+        sReg1.Add("1011")
+      CASE "c"
+        sReg1.Add("1100")
+      CASE "d"
+        sReg1.Add("1101")
+      CASE "e"
+        sReg1.Add("1110")
+      CASE "f"
+        sReg1.Add("1111")
+    END SELECT 
+    iReg3 += 1
+    WEND
+    sReg1b = sReg1.Join("")
+    
+    sReg1.Clear()
+    
+    FOR iTemp = 1 TO Len(sReg1b)
+      sReg1.Add(Mid(sReg1b, iTemp, 1))
+    NEXT 
+    iReg3 = 0
+    
+    WHILE iReg3 < 384
+      iKey1 = (iKey1 * 11 + 77213) MOD 81371
+      iKey2 = (iKey2 * 17 + 92717) MOD 192811
+      iReg6.Add((iKey1 + iKey2) MOD 128)
+      iReg3 += 1
+    WEND 
+    
+    
+    iReg3 = 256
+    
+    WHILE iReg3 >= 0
+      iReg5 = iReg6[iReg3]
+      iReg4 = iReg3 MOD 128
+      sReg8 = sReg1[iReg5]
+      sReg1[iReg5] = sReg1[iReg4]
+      sReg1[iReg4] = sReg8
+      iReg3 -= 1
+    WEND 
+    iReg3 = 0
+    
+    WHILE iReg3 < 128
+      sReg1[iReg3] = CStr(CInt(sReg1[iReg3]) XOR (iReg6[iReg3 + 256] AND 1))
+      iReg3 += 1
+    WEND 
+    
+    sReg12 = sReg1.Join("")
+    iReg3 = 0 
+    
+    WHILE iReg3 < Len(sReg12)
+      sReg9 = Mid(sReg12, iReg3 + 1, 4)
+      sReg7.Add(sReg9)
+      iReg3 = iReg3 + 4 
+    WEND 
+    
+    iReg3 = 0
+    
+    WHILE iReg3 < sReg7.Length
+      sReg0 = sReg7[iReg3]
+      
+      SELECT CASE sReg0
+        CASE "0000"
+          sReg2.Add("0")
+        CASE "0001"
+          sReg2.Add("1")
+        CASE "0010"
+          sReg2.Add("2")
+        CASE "0011"
+          sReg2.Add("3")
+        CASE "0100"
+          sReg2.Add("4")
+        CASE "0101"
+          sReg2.Add("5")
+        CASE "0110"
+          sReg2.Add("6")
+        CASE "0111"
+          sReg2.Add("7")
+        CASE "1000"
+          sReg2.Add("8")
+        CASE "1001"
+          sReg2.Add("9")
+        CASE "1010"
+          sReg2.Add("a")
+        CASE "1011"
+          sReg2.Add("b")
+        CASE "1100"
+          sReg2.Add("c")
+        CASE "1101"
+          sReg2.Add("d")
+        CASE "1110"
+          sReg2.Add("e")
+        CASE "1111"
+          sReg2.add("f")
+      END SELECT 
+      iReg3 += 1
+    WEND
+    RETURN sReg2.Join("")
+    
+END
+
+'****
+
+'****p* FMain.class/Redimensionar [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Redimensionar()
+'* SOURCE 
+PUBLIC SUB Redimensionar()
+  
+  VBox1.Resize(700, iNumDescargas * 150)
+  VBox1.Reparent(ScrollView1)  
+  
+END
+
+
+'****
+
+'****e* FMain.class/Numero_Descargas_Read [PRIVATE FUNCTION]
+'* SYNOPSIS
+'*     PRIVATE FUNCTION Numero_Descargas_Read() AS Integer
+'* RETURN VALUE
+'*    AS Integer
+'* SOURCE 
+PRIVATE FUNCTION Numero_Descargas_Read() AS Integer
+
+  RETURN iNumDescargas  
+
+END
+
+'****
+
+'****e* FMain.class/Numero_Descargas_Write [PRIVATE SUB]
+'* SYNOPSIS
+'*     PRIVATE SUB Numero_Descargas_Write(Value AS Integer)
+'* ARGUMENTS
+'*   Value AS Integer
+'* SOURCE 
+PRIVATE SUB Numero_Descargas_Write(Value AS Integer)
+
+  iNumDescargas += Value
+
+END
+
+
+
+'****
+
+'****e* FMain.class/Reproductor_Read [PRIVATE FUNCTION]
+'* SYNOPSIS
+'*     PRIVATE FUNCTION Reproductor_Read() AS String
+'* RETURN VALUE
+'*    AS String
+'* SOURCE 
+PRIVATE FUNCTION Reproductor_Read() AS String
+
+    RETURN sReproductor
+  
+END
+
+'****
+
+'****e* FMain.class/Reproductor_Write [PRIVATE SUB]
+'* SYNOPSIS
+'*     PRIVATE SUB Reproductor_Write(Value AS String)
+'* ARGUMENTS
+'*   Value AS String
+'* SOURCE 
+PRIVATE SUB Reproductor_Write(Value AS String)
+
+  sReproductor = Value
+
+END
+
+'****
+
+'****e* FMain.class/btnElegir_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB btnElegir_Click()
+'* SOURCE 
+PUBLIC SUB btnElegir_Click()
+
+  DIM iResultado AS Integer
+  DIM wOpciones AS Opciones
+  wOpciones = NEW Opciones
+  iResultado = wOpciones.ShowModal()
+  
+
+END
+
+'****

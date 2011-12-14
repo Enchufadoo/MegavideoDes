@@ -1,0 +1,40 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,100,52)
+  Text = ("")
+  Spacing = 10
+  { HBox1 HBox
+    MoveScaled(3,9,91,4)
+    Spacing = 10
+    { txtDireccion TextBox
+      MoveScaled(1,0,53,3)
+      Text = ("Ingresa la direccion de MegaVideo")
+    }
+    { btnComprobar Button
+      MoveScaled(58,0,17,3)
+      Text = ("Comprobar")
+      Picture = Picture["icon:/24/pen"]
+    }
+    { btnDescargar Button
+      MoveScaled(76,0,14,3)
+      Visible = False
+      Text = ("Descargar")
+      Picture = Picture["icon:/24/play"]
+    }
+  }
+  { ScrollView1 ScrollView
+    MoveScaled(3,14,91.25,32)
+    { VBox1 VBox
+      MoveScaled(1,0,87.5,31)
+    }
+  }
+  { btnElegir Button
+    MoveScaled(75,47,19,4)
+    Text = ("Elegir Reprouctor")
+    Picture = Picture["icon:/16/color"]
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(3,1,53,7)
+  }
+}

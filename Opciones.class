@@ -1,0 +1,83 @@
+' Gambas class file
+'****h* Formularios/Opciones.class
+'****
+'****h* Opciones.class/Definicion 
+'* DESCRIPTION
+'* Formulario que crea un archivo de configuracion que contiene que reproductor usar
+'* SOURCE 
+' Gambas class file '
+
+'****
+
+'****e* Opciones.class/Form_Open [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Form_Open()
+'* SOURCE 
+PUBLIC SUB Form_Open()
+  DIM sOpcion AS String = FMain.Reproductor
+
+  IF sOpcion = "REPRODUCTORINTERNO" THEN 
+    RadioButton1.Value = TRUE
+  ELSE 
+    RadioButton2.Value = TRUE
+    TextBox1.Text = sOpcion
+  ENDIF 
+  
+  
+END
+
+
+'****
+
+'****e* Opciones.class/RadioButton2_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB RadioButton2_Click()
+'* SOURCE 
+PUBLIC SUB RadioButton2_Click()
+
+  IF TextBox1.Enabled = FALSE THEN 
+    TextBox1.Enabled = TRUE
+  ENDIF 
+
+END
+
+'****
+
+'****e* Opciones.class/RadioButton1_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB RadioButton1_Click()
+'* SOURCE 
+PUBLIC SUB RadioButton1_Click()
+
+  IF TextBox1.Enabled = TRUE THEN 
+    TextBox1.Enabled = FALSE
+  ENDIF 
+
+END
+
+'****
+
+'****e* Opciones.class/Button1_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Button1_Click()
+'* SOURCE 
+PUBLIC SUB Button1_Click()
+  DIM hConf AS Settings
+  hConf = NEW Settings(User.Home &/ ".config/gambas" &/ Application.Name & ".conf")
+  
+  IF RadioButton1.Value = TRUE THEN 
+    hConf["Reproductor"] = "REPRODUCTORINTERNO"
+    FMain.Reproductor = "REPRODUCTORINTERNO"
+    hConf.Save()
+    
+    ME.Close(2)
+  ELSE 
+    hConf["Reproductor"] = Trim(TextBox1.Text)
+    FMain.Reproductor = Trim(TextBox1.Text)
+     hConf.Save()
+    ME.Close(3)
+  ENDIF  
+
+END
+
+'****

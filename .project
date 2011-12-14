@@ -1,0 +1,19 @@
+# Gambas Project File 2.0
+# Compiled with Gambas 2.23.0
+Title=MegavideoDes
+Startup=FMain
+Version=0.0.6
+Library=gb.qt
+Library=gb.form
+Library=gb.desktop
+Library=gb.net
+Library=gb.net.curl
+Library=gb.pcre
+Library=gb.settings
+TabSize=2
+ControlPublic=1
+ExecPath=/home/ariel/Desktop/Subir/megavideo.gambas
+SourcePath=/home/ariel/Desktop/Subir
+Maintainer=ariel
+Address=ariel@ariel-laptop
+License=General Public Licence

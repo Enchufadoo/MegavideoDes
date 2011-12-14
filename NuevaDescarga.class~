@@ -1,0 +1,321 @@
+' Gambas class file
+'****h* Clases/NuevaDescarga.class
+'****
+'****h* NuevaDescarga.class/Definicion 
+'* DESCRIPTION
+'* Crea los botones barra de estado y demas para cada descarga
+'* Ademas crea un nueva descarga de wget y controla los eventos
+'* PARAMETERS
+'*    PUBLIC tTimer AS Timer
+'* SOURCE 
+' Gambas class file '
+PRIVATE wSeparador AS Separator
+PRIVATE wCajaH AS HBox
+PRIVATE wCajaV AS VBox
+PRIVATE wBarraProgreso AS ProgressBar
+PRIVATE wBotonVer AS Button
+PRIVATE wBotonCancelar AS Button
+PRIVATE wBotonReiniciar AS Button
+PRIVATE wBotonPausar AS Button
+PRIVATE wBotonEliminar AS Button
+PRIVATE wEtiquetaEstado AS TextBox 
+PRIVATE wEtiquetaDestino AS TextBox
+PRIVATE wEtiquetaTiempo AS TextLabel
+PRIVATE wEtiquetaVelocidad AS TextLabel
+PRIVATE oBajarArchivo AS BajarArchivo
+
+PUBLIC tTimer AS Timer
+
+
+'****
+
+'****e* NuevaDescarga.class/_new [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB _new(vBoxPadre AS VBox)
+'* crea toda la parte grafica
+'* ARGUMENTS
+'*   vBoxPadre AS VBox
+'* SOURCE 
+PUBLIC SUB _new(vBoxPadre AS VBox)
+  
+  
+  tTimer = NEW Timer AS "tTimer"
+  tTimer.Enabled = TRUE
+    
+  wCajaH = NEW HBox(vBoxPadre)
+  wSeparador = NEW Separator(vBoxPadre)  
+  
+  wCajaH.Resize(700, 120)
+  wCajaH.Spacing = 10
+  wCajaH.Padding = 10
+  
+  wCajaV = NEW VBox(wCajaH)
+  wCajaV.Resize(32, 32)
+  wBotonEliminar = NEW Button(wCajaV) AS "wBotonEliminar"
+  wBotonEliminar.Resize(32, 32)
+  wBotonEliminar.Picture = Picture["icon:/16/delete"]
+  wBotonEliminar.Visible = FALSE
+  wBotonEliminar.Text = ""
+  
+  wCajaV = NEW VBox(wCajaH)
+  wCajaV.Resize(330, 110)
+  wCajaV.Padding = 0
+  wCajaV.Spacing = 0
+  
+  wEtiquetaEstado = NEW TextBox(wCajaV)
+  wEtiquetaEstado.Resize(300, 20)
+  wEtiquetaEstado.Text = ""
+  wEtiquetaEstado.Border = Border.None
+  wEtiquetaEstado.BackColor = Color.Background
+  wEtiquetaEstado.ReadOnly = TRUE
+  
+  
+  wBarraProgreso = NEW ProgressBar(wCajaV)
+  wBarraProgreso.Resize(300, 32)
+  wBarraProgreso.Value = 0
+  
+  wEtiquetaDestino = NEW TextBox(wCajaV)
+  wEtiquetaDestino.Resize(300, 20)
+  wEtiquetaDestino.Text = ""
+  wEtiquetaDestino.Border = Border.None
+  wEtiquetaDestino.BackColor = Color.Background
+  wEtiquetaDestino.ReadOnly = TRUE
+  
+  wCajaV = NEW VBox(wCajaH)
+  wCajaV.Resize(100, 32)
+  wBotonCancelar = NEW Button(wCajaV) AS "wBotonCancelar"
+  wBotonCancelar.Resize(100, 32)
+  wBotonCancelar.Text = "Cancelar"
+  wBotonCancelar.Picture = Picture["icon:/16/cancel"]
+  
+  wBotonReiniciar = NEW Button(wCajaV) AS "wBotonReiniciar"
+  wBotonReiniciar.Resize(100, 32)
+  wBotonReiniciar.Text = "Reiniciar"
+  wBotonReiniciar.Picture = Picture["icon:/16/refresh"]
+  wBotonReiniciar.Visible = FALSE
+  
+  wEtiquetaVelocidad = NEW TextLabel(wCajaV)
+  wEtiquetaVelocidad.AutoResize = TRUE
+  wEtiquetaVelocidad.Resize(100, 32)
+  wEtiquetaVelocidad.Text = ""
+  
+  
+  
+  wCajaV = NEW VBox(wCajaH)
+  wCajaV.Resize(100, 32)
+  wBotonVer = NEW Button(wCajaV) AS "wBotonVer"
+  wBotonVer.Resize(70, 32)
+  wBotonVer.Text = "Ver"
+  wBotonVer.Picture = Picture["icon:/16/play"]
+  
+  wEtiquetaTiempo = NEW TextLabel(wCajaV)
+  wEtiquetaTiempo.AutoResize = TRUE
+  wEtiquetaTiempo.Resize(100, 32)
+  wEtiquetaTiempo.Text = ""
+  ' wSeparador.Width = vBoxPadre.Width '
+  ' 
+  'wCajaH.Background = Color.RGB(CInt(Rnd(0 - 255)), CInt(Rnd(0 - 255)), CInt(Rnd(0 - 255)))  '
+  ' 
+  ' wCajaH.Reparent(vBoxPadre) '
+  ' vBoxPadre.Reparent(FMain.ScrollView1) '
+ 
+ 
+END
+
+ 
+'****
+
+'****e* NuevaDescarga.class/oBajarArchivo_Avance [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB oBajarArchivo_Avance()
+'*
+'* Toma la señal Avance y actualiza el porcentaje y velocidad de descarga
+'* SOURCE 
+PUBLIC SUB oBajarArchivo_Avance()
+  
+  wBarraProgreso.Value = (oBajarArchivo.Porcentaje / 100)
+  IF oBajarArchivo.Velocidad <> "" THEN wEtiquetaVelocidad.Text = "<i>" & oBajarArchivo.Velocidad & "K/s</i>"
+  
+END
+
+'****
+
+'****m* NuevaDescarga.class/InicializarDescarga [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB InicializarDescarga(sDireccion AS String, sCarpetaDestino AS String, sNomArchivo AS String)
+'* ARGUMENTS
+'*   sDireccion AS String
+'*   sCarpetaDestino AS String
+'*   sNomArchivo AS String
+'* SOURCE 
+PUBLIC SUB InicializarDescarga(sDireccion AS String, sCarpetaDestino AS String, sNomArchivo AS String)
+  oBajarArchivo = NEW BajarArchivo(sDireccion, sCarpetaDestino, sNomArchivo)
+END
+
+'****
+
+'****m* NuevaDescarga.class/Descargar [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB Descargar()
+'* SOURCE 
+PUBLIC SUB Descargar()
+  
+  Object.Attach(oBajarArchivo, ME, "oBajarArchivo")
+  oBajarArchivo.Descargar()
+  
+END
+
+
+'****
+
+'****e* NuevaDescarga.class/wBotonCancelar_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB wBotonCancelar_Click()
+'* SOURCE 
+PUBLIC SUB wBotonCancelar_Click()
+  
+  oBajarArchivo.CancelarDescarga()  
+  
+END
+
+'****
+
+'****e* NuevaDescarga.class/oBajarArchivo_DescargaCancelada [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB oBajarArchivo_DescargaCancelada()
+'* SOURCE 
+PUBLIC SUB oBajarArchivo_DescargaCancelada()
+  
+  wBarraProgreso.Enabled = FALSE
+  wBotonEliminar.Visible = TRUE
+  wBotonCancelar.Visible = FALSE
+  wBotonReiniciar.Visible = TRUE
+  wEtiquetaEstado.Text = "Descarga Cancelada (" & oBajarArchivo.Texto_Error & ")"
+  wEtiquetaEstado.Pos = 0
+  wEtiquetaDestino.Text = oBajarArchivo.Nombre_Archivo
+  wEtiquetaDestino.Pos = 0
+  tTimer.Stop()
+END
+
+
+'****
+
+'****e* NuevaDescarga.class/wBotonEliminar_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB wBotonEliminar_Click()
+'*
+'* Simplemente elimina el contenedor grafico, no elimina el archivo
+'* SOURCE 
+PUBLIC SUB wBotonEliminar_Click()
+  
+  wCajaH.Delete()
+  wSeparador.Delete()
+  FMain.Numero_Descargas = -1
+  FMain.Redimensionar()
+  
+END
+
+'****
+
+'****e* NuevaDescarga.class/oBajarArchivo_Finalizado [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB oBajarArchivo_Finalizado()
+'* SOURCE 
+PUBLIC SUB oBajarArchivo_Finalizado()
+  wBotonCancelar.Visible = FALSE
+  wBotonEliminar.Visible = TRUE
+  wEtiquetaEstado.Text = "Descarga Finalizada (" & oBajarArchivo.Direccion_Descarga & ")"
+  wEtiquetaDestino.Text = oBajarArchivo.Nombre_Archivo
+  wEtiquetaEstado.Pos = 0
+  wEtiquetaDestino.Pos = 0
+  tTimer.Stop()
+END
+
+
+'****
+
+'****e* NuevaDescarga.class/oBajarArchivo_Descargando [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB oBajarArchivo_Descargando()
+'* SOURCE 
+PUBLIC SUB oBajarArchivo_Descargando()
+  wBarraProgreso.Enabled = TRUE
+  wBotonReiniciar.Visible = FALSE
+  wBotonEliminar.Visible = FALSE
+  wBotonCancelar.Visible = TRUE
+  wEtiquetaEstado.Text = oBajarArchivo.Direccion_Descarga
+  wEtiquetaDestino.Text = oBajarArchivo.Nombre_Archivo
+  wEtiquetaEstado.Pos = 0
+  wEtiquetaDestino.Pos = 0
+  tTimer.Start()
+END
+
+'****
+
+'****e* NuevaDescarga.class/wBotonReiniciar_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB wBotonReiniciar_Click()
+'* SOURCE 
+PUBLIC SUB wBotonReiniciar_Click()
+  
+  oBajarArchivo.Descargar()
+  
+END
+
+'****
+
+'****m* NuevaDescarga.class/CancelarDescarga [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB CancelarDescarga()
+'* SOURCE 
+PUBLIC SUB CancelarDescarga()
+  
+  oBajarArchivo.CancelarDescarga()
+  
+END
+
+'****
+
+'****e* NuevaDescarga.class/wBotonVer_Click [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB wBotonVer_Click()
+'* SOURCE 
+PUBLIC SUB wBotonVer_Click()
+  
+  DIM wPantalla AS VerVideo
+  IF FMain.Reproductor = "REPRODUCTORINTERNO" THEN 
+    wPantalla = NEW VerVideo(oBajarArchivo.Nombre_Archivo)
+    wPantalla.Show()
+  ELSE 
+    SHELL FMain.Reproductor & " " & oBajarArchivo.Nombre_Archivo
+  ENDIF 
+  
+END
+
+'****
+
+'****m* NuevaDescarga.class/TiempoTranscurrido [PRIVATE SUB]
+'* SYNOPSIS
+'*     PRIVATE SUB TiempoTranscurrido() AS String
+'* RETURN VALUE
+'*    AS String
+'* SOURCE 
+PRIVATE SUB TiempoTranscurrido() AS String
+  
+  RETURN Time(0, 0, DateDiff(oBajarArchivo.Hora_Comienzo, Now(), gb.Second))
+  
+END
+
+'****
+
+'****e* NuevaDescarga.class/tTimer_Timer [PUBLIC SUB]
+'* SYNOPSIS
+'*     PUBLIC SUB tTimer_Timer()
+'* SOURCE 
+PUBLIC SUB tTimer_Timer()
+  
+  wEtiquetaTiempo.Text = TiempoTranscurrido()  
+  
+END
+
+'****
